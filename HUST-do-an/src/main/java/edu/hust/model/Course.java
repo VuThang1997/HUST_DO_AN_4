@@ -16,10 +16,10 @@ public class Course {
 	@Column(name = "ID")
 	private int courseID;
 
-	@Column(name = "CourseName", nullable = false, length = 30)
+	@Column(name = "CourseName", nullable = false, length = 30, unique = true)
 	private String courseName;
 
-	@Column(name = "Description")
+	@Column(name = "Description", nullable = true)
 	private String description;
 
 	public Course() {

@@ -2,10 +2,11 @@ package edu.hust.utils;
 
 public class GeneralValue {
 
-	public static final double minLongitude = -180D;
-	public static final double maxLongitude = 180D;
-	public static final double minLatitude = -90D;
-	public static final double maxLatitude = 90D;
+	//from corner of Dai Co Viet to TC
+	public static final double minLongitude = 105.841582;
+	public static final double maxLongitude = 105.847237;
+	public static final double minLatitude = 21.002058;
+	public static final double maxLatitude = 21.003711;
 	
 	//public static final int minSignalStrength = -70;
 	//public static final int maxSignalStrength = -30;

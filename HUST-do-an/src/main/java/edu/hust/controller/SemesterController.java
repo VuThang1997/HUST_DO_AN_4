@@ -176,10 +176,6 @@ public class SemesterController {
 			if (semester == null) {
 				return ResponseEntity.badRequest().body("Error code: 33; Content: This semester do not exist!");
 			}
-			
-			if (!this.semesterService.checkSemesterDependant(semesterName)) {
-				return ResponseEntity.badRequest().body("Error code: 34; Content: This semester still has dependant!");
-			}
 
 			// check if semester's time begin is duplicate
 			beginDate = LocalDate.parse(jsonMap.get("BeginDate").toString());

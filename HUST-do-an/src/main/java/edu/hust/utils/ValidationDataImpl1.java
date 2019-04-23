@@ -12,7 +12,6 @@ import edu.hust.enumData.IsLearning;
 import edu.hust.enumData.IsTeaching;
 import edu.hust.model.Class;
 import edu.hust.model.ClassRoom;
-import edu.hust.model.Course;
 import edu.hust.model.Room;
 
 @Component
@@ -22,6 +21,7 @@ public class ValidationDataImpl1 implements ValidationData {
 	private ValidationAccountData validationAccountData;
 	private ValidationUserData validationUserData;
 	private ValidationSemesterData validationSemesterData;
+	private ValidationCourseData validationCourseData;
 
 	public ValidationDataImpl1() {
 		super();
@@ -31,11 +31,13 @@ public class ValidationDataImpl1 implements ValidationData {
 	@Autowired
 	public ValidationDataImpl1(@Qualifier("ValidationAccountDataImpl1") ValidationAccountData validationAccountData,
 			@Qualifier("ValidationUserDataImpl1") ValidationUserData validationUserData,
-			@Qualifier("ValidationSemesterDataImpl1") ValidationSemesterData validationSemesterData) {
+			@Qualifier("ValidationSemesterDataImpl1") ValidationSemesterData validationSemesterData,
+			@Qualifier("ValidationCourseDataImpl1") ValidationCourseData validationCourseData) {
 		super();
 		this.validationAccountData = validationAccountData;
 		this.validationUserData = validationUserData;
 		this.validationSemesterData = validationSemesterData;
+		this.validationCourseData = validationCourseData;
 	}
 
 	@Override
@@ -136,6 +138,22 @@ public class ValidationDataImpl1 implements ValidationData {
 		
 		return errorMessage;
 	}
+	
+	@Override
+	public String validateCourseData(Map<String, Object> mapKeys) {
+		String errorMessage = null;
+
+		if (mapKeys.containsKey("ID")) {
+			int id = Integer.parseInt(mapKeys.get("ID").toString());
+			errorMessage = this.validationCourseData.validateIdData(id);
+		}
+
+		if (errorMessage == null && mapKeys.containsKey("CourseName")) {
+			errorMessage = this.validationCourseData.validateCourseNameData(mapKeys.get("CourseName").toString());
+		}
+		
+		return errorMessage;
+	}
 
 	@Override
 	public boolean validateClassData(Class target) {
@@ -152,14 +170,6 @@ public class ValidationDataImpl1 implements ValidationData {
 		double gpsLong = room.getGpsLongitude();
 		if (room.getAddress() == null || gpsLa < GeneralValue.minLatitude || gpsLa > GeneralValue.maxLatitude
 				|| gpsLong < GeneralValue.minLongitude || gpsLong > GeneralValue.maxLongitude) {
-			return false;
-		}
-		return true;
-	}
-
-	@Override
-	public boolean validateCourseData(Course course) {
-		if (course.getCourseName() == null) {
 			return false;
 		}
 		return true;

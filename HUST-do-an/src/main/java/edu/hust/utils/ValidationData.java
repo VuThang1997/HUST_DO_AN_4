@@ -4,7 +4,6 @@ import java.util.Map;
 
 import edu.hust.model.Class;
 import edu.hust.model.ClassRoom;
-import edu.hust.model.Course;
 import edu.hust.model.Room;
 
 /**
@@ -23,7 +22,7 @@ public interface ValidationData {
 	
 	boolean validateRoomData(Room room);
 
-	boolean validateCourseData(Course course);
+	String validateCourseData(Map<String, Object> mapKeys);
 	
 	boolean validateClassRoomData(ClassRoom classRoom);
 	

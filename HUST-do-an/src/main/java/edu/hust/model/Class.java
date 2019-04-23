@@ -32,7 +32,7 @@ public class Class implements Serializable {
 	@Column(name = "MaxStudent", nullable = false)
 	private int maxStudent;
 	
-	@Column(name = "IdentifyString")
+	@Column(name = "IdentifyString", nullable = true, length = 10)
 	private String identifyString;
 	
 	@Column(name = "NumberOfLessons", nullable = false)

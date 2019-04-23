@@ -14,7 +14,7 @@ import edu.hust.repository.CourseRepository;
 public class CourseServiceImpl1 implements CourseService {
 
 	private CourseRepository courseRepository;
-	//private ClassRepository classRepository;
+	// private ClassRepository classRepository;
 
 	public CourseServiceImpl1() {
 		super();
@@ -25,11 +25,12 @@ public class CourseServiceImpl1 implements CourseService {
 	public CourseServiceImpl1(CourseRepository courseRepository) {
 		super();
 		this.courseRepository = courseRepository;
-		//this.classRepository = classRepository;
+		// this.classRepository = classRepository;
 	}
 
 	@Override
 	public boolean addNewCourse(Course course) {
+		// check if another course has use this name
 		if (this.courseRepository.findByCourseName(course.getCourseName()).isPresent()) {
 			return false;
 		}
@@ -50,14 +51,12 @@ public class CourseServiceImpl1 implements CourseService {
 	public boolean updateCourseInfo(Course course) {
 		Optional<Course> courseInfo = this.courseRepository.findById(course.getCourseID());
 		if (courseInfo.isPresent()) {
-			Course target = courseInfo.get();
-			if (course.getCourseName() != null) {
-				target.setCourseName(course.getCourseName());
+			// course name must be unique
+			Optional<Course> duplicateCourse = this.courseRepository.findByCourseName(course.getCourseName());
+			if (duplicateCourse.isPresent()) {
+				return false;
 			}
-			if (course.getDescription() != null) {
-				target.setDescription(course.getDescription());
-				;
-			}
+
 			this.courseRepository.save(course);
 			return true;
 		}
@@ -66,15 +65,13 @@ public class CourseServiceImpl1 implements CourseService {
 
 	@Override
 	public boolean deleteCourse(int id) {
-		if (this.courseRepository.existsById(id)) {
-			try {
-				this.courseRepository.deleteById(id);
-				return true;
-			} catch(Exception e) {
-				e.printStackTrace();
-				return false;
-			}
+		try {
+			this.courseRepository.deleteById(id);
+			return true;
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
 		}
-		return false;
 	}
 }
