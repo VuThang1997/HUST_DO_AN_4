@@ -22,6 +22,8 @@ public class ValidationDataImpl1 implements ValidationData {
 	private ValidationUserData validationUserData;
 	private ValidationSemesterData validationSemesterData;
 	private ValidationCourseData validationCourseData;
+	private ValidationRoomData validationRoomData;
+	private ValidationClassData validationClassData;
 
 	public ValidationDataImpl1() {
 		super();
@@ -32,12 +34,16 @@ public class ValidationDataImpl1 implements ValidationData {
 	public ValidationDataImpl1(@Qualifier("ValidationAccountDataImpl1") ValidationAccountData validationAccountData,
 			@Qualifier("ValidationUserDataImpl1") ValidationUserData validationUserData,
 			@Qualifier("ValidationSemesterDataImpl1") ValidationSemesterData validationSemesterData,
-			@Qualifier("ValidationCourseDataImpl1") ValidationCourseData validationCourseData) {
+			@Qualifier("ValidationCourseDataImpl1") ValidationCourseData validationCourseData, 
+			@Qualifier("ValidationRoomDataImpl1") ValidationRoomData validationRoomData, 
+			@Qualifier("ValidationClassDataImpl1") ValidationClassData validationClassData) {
 		super();
 		this.validationAccountData = validationAccountData;
 		this.validationUserData = validationUserData;
 		this.validationSemesterData = validationSemesterData;
 		this.validationCourseData = validationCourseData;
+		this.validationRoomData = validationRoomData;
+		this.validationClassData = validationClassData;
 	}
 
 	@Override
@@ -120,6 +126,7 @@ public class ValidationDataImpl1 implements ValidationData {
 				semesterName = mapKeys.get("SemesterName").toString();
 				beginDate = LocalDate.parse(mapKeys.get("BeginDate").toString());
 				endDate = LocalDate.parse(mapKeys.get("EndDate").toString());
+				
 				errorMessage = this.validationSemesterData.validateSemesterNameData(semesterName);
 				if (errorMessage == null) {
 					int validYear = Integer.parseInt(semesterName.substring(0, 4));
@@ -128,12 +135,45 @@ public class ValidationDataImpl1 implements ValidationData {
 				if (errorMessage == null) {
 					int sequenceOfSemester = Integer.parseInt(semesterName.substring(4));
 					errorMessage = this.validationSemesterData.validateEndDateData(endDate, beginDate, sequenceOfSemester);
-				}
-				
+				}	
 			} catch (DateTimeParseException e) {
 				e.printStackTrace();
-				return "Cannot parse BeginDate info!";
+				return "Cannot parse Date info!";
 			}
+		}
+		
+		return errorMessage;
+	}
+	
+	@Override
+	public String validateRoomData(Map<String, Object> mapKeys) {
+		String errorMessage = null;
+		
+		if (mapKeys.containsKey("ID")) {
+			int id = Integer.parseInt(mapKeys.get("ID").toString());
+			errorMessage = this.validationRoomData.validateIdData(id);
+		}
+		
+		if (errorMessage == null && mapKeys.containsKey("RoomName")) {
+			errorMessage = this.validationRoomData.validateRoomNameData(mapKeys.get("RoomName").toString());
+		}
+		
+		if (errorMessage == null && mapKeys.containsKey("Address")) {
+			errorMessage = this.validationRoomData.validateAddressData(mapKeys.get("Address").toString());
+		}
+		
+		if (errorMessage == null && mapKeys.containsKey("MacAddress")) {
+			errorMessage = this.validationRoomData.validateMacAddressData(mapKeys.get("MacAddress").toString());
+		}
+		
+		if (errorMessage == null && mapKeys.containsKey("GpsLa")) {
+			double gpsLa = Double.parseDouble(mapKeys.get("GpsLa").toString());
+			errorMessage = this.validationRoomData.validateGpsLatitude(gpsLa);
+		}
+		
+		if (errorMessage == null && mapKeys.containsKey("GpsLong")) {
+			double gpsLong = Double.parseDouble(mapKeys.get("GpsLong").toString());
+			errorMessage = this.validationRoomData.validateGPSLongitudeData(gpsLong);
 		}
 		
 		return errorMessage;
@@ -156,24 +196,43 @@ public class ValidationDataImpl1 implements ValidationData {
 	}
 
 	@Override
-	public boolean validateClassData(Class target) {
-		if (target.getClassName() == null || target.getMaxStudent() <= 0 || target.getSemester() == null
-				|| target.getCourse() == null) {
-			return false;
+	public String validateClassData(Map<String, Object> mapKeys) {
+		String errorMessage = null;
+		int tmpNumber = -1;
+		
+		if (mapKeys.containsKey("ID")) {
+			tmpNumber = Integer.parseInt(mapKeys.get("ID").toString());
+			errorMessage = this.validationClassData.validateIdData(tmpNumber);
 		}
-		return true;
+		
+		if (errorMessage == null && mapKeys.containsKey("CourseID")) {
+			tmpNumber = Integer.parseInt(mapKeys.get("CourseID").toString());
+			errorMessage = this.validationClassData.validateIdData(tmpNumber);
+		}
+		
+		if (errorMessage == null && mapKeys.containsKey("SemesterID")) {
+			tmpNumber = Integer.parseInt(mapKeys.get("SemesterID").toString());
+			errorMessage = this.validationClassData.validateIdData(tmpNumber);
+		}
+		
+		if (errorMessage == null && mapKeys.containsKey("ClassName")) {
+			errorMessage = this.validationClassData.validateClassNameData(mapKeys.get("ClassName").toString());
+		}
+		
+		if (errorMessage == null && mapKeys.containsKey("MaxStudent")) {
+			tmpNumber = Integer.parseInt(mapKeys.get("MaxStudent").toString());
+			errorMessage = this.validationClassData.validateMaxStudent(tmpNumber);
+		}
+		
+		if (errorMessage == null && mapKeys.containsKey("NumberOfLessons")) {
+			tmpNumber = Integer.parseInt(mapKeys.get("NumberOfLessons").toString());
+			errorMessage = this.validationClassData.validateMaxStudent(tmpNumber);
+		}
+		
+		return errorMessage;
 	}
 
-	@Override
-	public boolean validateRoomData(Room room) {
-		double gpsLa = room.getGpsLatitude();
-		double gpsLong = room.getGpsLongitude();
-		if (room.getAddress() == null || gpsLa < GeneralValue.minLatitude || gpsLa > GeneralValue.maxLatitude
-				|| gpsLong < GeneralValue.minLongitude || gpsLong > GeneralValue.maxLongitude) {
-			return false;
-		}
-		return true;
-	}
+	
 
 	@Override
 	public boolean validateClassRoomData(ClassRoom classRoom) {

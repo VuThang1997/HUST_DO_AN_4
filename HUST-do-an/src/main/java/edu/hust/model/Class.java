@@ -59,6 +59,13 @@ public class Class implements Serializable {
 		this.isChecked = null;
 	}
 
+	public Class(String className, int maxStudent, int numberOfLessons) {
+		super();
+		this.className = className;
+		this.maxStudent = maxStudent;
+		this.numberOfLessons = numberOfLessons;
+	}
+
 	public Class(String name, int maxStudent) {
 		super();
 		this.className = name;

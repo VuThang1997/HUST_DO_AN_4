@@ -30,49 +30,23 @@ public class RoomServiceImpl1 implements RoomService {
 
 	@Override
 	public boolean deleteRoom(int roomID) {
-		if (this.roomRepository.existsById(roomID)) {
+		try {
 			this.roomRepository.deleteById(roomID);
 			return true;
+		} catch(Exception e) {
+			e.printStackTrace();
+			return false;
 		}
-		return false;
-	}
-
-	@Override
-	public Room getInfo(int id) {
-		Optional<Room> room = this.roomRepository.findById(id);
-		if (room.isPresent()) {
-			return room.get();
-		}
-		return null;
 	}
 
 	@Override
 	public boolean updateRoom(Room room) {
-		try {
-			Room infoRoom = this.roomRepository.findById(room.getId()).get();
-			if (room.getAddress() != null) {
-				infoRoom.setAddress(room.getAddress());
-			}
-			if (room.getGpsLongitude() != 0) {
-				infoRoom.setGpsLongitude(room.getGpsLongitude());
-			}
-			if (room.getGpsLatitude() != 0) {
-				infoRoom.setGpsLatitude(room.getGpsLatitude());
-			}
-			this.roomRepository.save(infoRoom);
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
-
+		this.roomRepository.save(room);
+		return true;
 	}
 
 	@Override
 	public boolean addNewRoom(Room room) {
-		if (this.roomRepository.findByAddress(room.getAddress())) {
-			return false;
-		}
 		this.roomRepository.save(room);
 		return true;
 	}
@@ -102,6 +76,36 @@ public class RoomServiceImpl1 implements RoomService {
 		double d = GeneralValue.eQuatorialEarthRadius * c * 1000;
 
 		return d;
+	}
+
+	@Override
+	public boolean checkRoomNameDuplicate(String roomName) {
+		Optional<Room> room = this.roomRepository.findByRoomName(roomName);
+		if (room.isPresent()) {
+			return false;
+		}
+		
+		return true;
+	}
+
+	@Override
+	public boolean checkMacAddrDuplicate(String macAddress) {
+		Optional<Room> room = this.roomRepository.findByMacAddress(macAddress);
+		if (room.isPresent()) {
+			return false;
+		}
+		
+		return true;
+	}
+
+	@Override
+	public Room findRoomById(int id) {
+		Optional<Room> room = this.roomRepository.findById(id);
+		if (room.isPresent()) {
+			return room.get();
+		}
+		
+		return null;
 	}
 
 }

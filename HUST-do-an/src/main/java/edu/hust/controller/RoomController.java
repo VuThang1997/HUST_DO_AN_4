@@ -2,6 +2,8 @@
 package edu.hust.controller;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -14,87 +16,145 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.hust.model.Room;
 import edu.hust.service.RoomService;
 import edu.hust.utils.ValidationData;
+import edu.hust.utils.ValidationRoomData;
 
 @RestController
 public class RoomController {
 
 	private RoomService roomService;
 	private ValidationData validationData;
+	private ValidationRoomData validationRoomData;
 
 	@Autowired
 	public RoomController(@Qualifier("RoomServiceImpl1") RoomService roomService,
-			@Qualifier("ValidationDataImpl1") ValidationData validationData) {
+			@Qualifier("ValidationDataImpl1") ValidationData validationData, 
+			@Qualifier("ValidationRoomDataImpl1") ValidationRoomData validationRoomData) {
 		this.roomService = roomService;
 		this.validationData = validationData;
+		this.validationRoomData = validationRoomData;
 	}
 
 	@RequestMapping(value = "/rooms", method = RequestMethod.POST)
 	public ResponseEntity<?> addNewRoom(@RequestBody String roomInfo) {
+		String errorMessage = null;
+		ObjectMapper objectMapper = null;
+		Map<String, Object> jsonMap = null;
+		Room room = null;
+		
 		try {
-			ObjectMapper mapper = new ObjectMapper();
-			Room room = mapper.readValue(roomInfo, Room.class);
+			objectMapper = new ObjectMapper();
+			room = objectMapper.readValue(roomInfo, Room.class);
+			jsonMap = new HashMap<>();
 			
-			if (!this.validationData.validateRoomData(room)) {
-				return ResponseEntity.badRequest().body("Not enough info!");
+			jsonMap.put("RoomName", room.getRoomName());
+			jsonMap.put("Address", room.getAddress());
+			jsonMap.put("GpsLa", room.getGpsLatitude());
+			jsonMap.put("GpsLong", room.getGpsLongitude());
+			jsonMap.put("MacAddress", room.getMacAddress());
+			
+			errorMessage = this.validationData.validateRoomData(jsonMap);
+			if (errorMessage != null) {
+				return ResponseEntity.badRequest().body("Error code: 50; Content: Adding room failed because " + errorMessage);
 			}
 			
-			if (this.roomService.addNewRoom(room)) {
-				return ResponseEntity.ok().build();
-			} else {
-				return new ResponseEntity<>("This room is not existed", HttpStatus.NOT_FOUND);
+			if (!this.roomService.checkRoomNameDuplicate(room.getRoomName())) {
+				return ResponseEntity.badRequest().body("Error code: 51; Content: Duplicate room name!");
 			}
+			
+			if (!this.roomService.checkMacAddrDuplicate(room.getMacAddress())) {
+				return ResponseEntity.badRequest().body("Error code: 52; Content: Duplicate MAC address!");
+			}
+			
+			this.roomService.addNewRoom(room);
+			return ResponseEntity.ok("Adding new room successes!");
+			
 		} catch (IOException e) {
 			e.printStackTrace();
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error happened!");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					"Error code: 02; Content: Error happened when jackson deserialization info !");
 		}
 	}
 
 	@RequestMapping(value = "/rooms", method = RequestMethod.DELETE)
-	public ResponseEntity<?> deleteRoom(@RequestParam(value = "roomID", required = true) int roomID) {
-		if (this.roomService.deleteRoom(roomID)) {
-			return ResponseEntity.ok().build();
-		} else {
-			return new ResponseEntity<>("This room is not existed", HttpStatus.NOT_FOUND);
+	public ResponseEntity<?> deleteRoom(@RequestParam(value = "roomID", required = true) int id) {
+		String errorMessage = this.validationRoomData.validateIdData(id);
+		if (errorMessage != null) {
+			return ResponseEntity.badRequest().body("Error code: 54; Content: Deleting room failed because " + errorMessage);
 		}
+		
+		Room room = this.roomService.findRoomById(id);
+		if (room == null) {
+			return new ResponseEntity<>("Error code: 53; Content: This room do not exist!", HttpStatus.NOT_FOUND);
+		}
+		
+		if (this.roomService.deleteRoom(id)) {
+			return ResponseEntity.ok("Deleting room successes!");
+		} 
+		return ResponseEntity.badRequest().body("Error code: 55; Content: This room still has dependant!");
 	}
 
 	@RequestMapping(value = "/rooms", method = RequestMethod.GET)
-	public ResponseEntity<?> readInfoRoom(@RequestParam(value = "roomID", required = true) int roomID) {
-		Room room = this.roomService.getInfo(roomID);
-
-		if (room == null) {
-			return new ResponseEntity<>("This room is not existed", HttpStatus.NOT_FOUND);
-		} else {
-			return ResponseEntity.ok(room);
+	public ResponseEntity<?> readInfoRoom(@RequestParam(value = "roomID", required = true) int id) {
+		String errorMessage = this.validationRoomData.validateIdData(id);
+		if (errorMessage != null) {
+			return ResponseEntity.badRequest().body("Error code: 57; Content: Getting room info failed because " + errorMessage);
 		}
+		
+		Room room = this.roomService.findRoomById(id);
+		if (room == null) {
+			return new ResponseEntity<>("Error code: 53; Content: This room do not exist!", HttpStatus.NOT_FOUND);
+		}
+
+		return ResponseEntity.ok(room);
 	}
 
 	@RequestMapping(value = "/rooms", method = RequestMethod.PUT)
 	public ResponseEntity<?> updateInfoRoom(@RequestBody String infoRoom) {
+		String errorMessage = null;
+		ObjectMapper objectMapper = null;
+		Map<String, Object> jsonMap = null;
+		Room room = null;
+		
 		try {
-			ObjectMapper mapper = new ObjectMapper();
-			Room updateInfo = mapper.readValue(infoRoom, Room.class);
-			if (this.roomService.updateRoom(updateInfo)) {
-				return ResponseEntity.ok().build();
-			} else {
-				return new ResponseEntity<>("This room is not existed", HttpStatus.NOT_FOUND);
+			objectMapper = new ObjectMapper();
+			room = objectMapper.readValue(infoRoom, Room.class);
+			jsonMap = new HashMap<>();
+			
+			jsonMap.put("ID", room.getId());
+			jsonMap.put("RoomName", room.getRoomName());
+			jsonMap.put("Address", room.getAddress());
+			jsonMap.put("GpsLa", room.getGpsLatitude());
+			jsonMap.put("GpsLong", room.getGpsLongitude());
+			jsonMap.put("MacAddress", room.getMacAddress());
+			
+			errorMessage = this.validationData.validateRoomData(jsonMap);
+			if (errorMessage != null) {
+				return ResponseEntity.badRequest().body("Error code: 56; Content: Updating room failed because " + errorMessage);
 			}
-		} catch (JsonGenerationException e) {
+			
+			if (this.roomService.findRoomById(room.getId()) == null) {
+				return new ResponseEntity<>("Error code: 53; Content: This room do not exist!", HttpStatus.NOT_FOUND);
+			}
+			
+			if (!this.roomService.checkRoomNameDuplicate(room.getRoomName())) {
+				return ResponseEntity.badRequest().body("Error code: 51; Content: Duplicate room name!");
+			}
+			
+			if (!this.roomService.checkMacAddrDuplicate(room.getMacAddress())) {
+				return ResponseEntity.badRequest().body("Error code: 52; Content: Duplicate MAC address!");
+			}
+			
+			this.roomService.updateRoom(room);
+			return ResponseEntity.ok("Updating room info successes!");
+		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong input content!");
-		} catch (JsonMappingException e) {
-			e.printStackTrace();
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Mapping JSON failed!");
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error happened!");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					"Error code: 02; Content: Error happened when jackson deserialization info !");
 		}
 	}
 }

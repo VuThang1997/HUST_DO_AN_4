@@ -58,7 +58,7 @@ public class AccountController {
 			// check request body has enough info in right JSON format
 			if (!this.jsonMapUtil.checkKeysExist(jsonMap, "Email", "Password")) {
 				return ResponseEntity.badRequest()
-						.body("Error code: 01;\n Content: Json dynamic map lacks necessary key(s)!");
+						.body("Error code: 01; Content: Json dynamic map lacks necessary key(s)!");
 			}
 
 			errorMessage = this.validationData.validateAccountData(jsonMap);

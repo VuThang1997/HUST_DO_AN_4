@@ -2,9 +2,7 @@ package edu.hust.utils;
 
 import java.util.Map;
 
-import edu.hust.model.Class;
 import edu.hust.model.ClassRoom;
-import edu.hust.model.Room;
 
 /**
  * @author BePro
@@ -18,9 +16,9 @@ public interface ValidationData {
 	
 	String validateSemesterData(Map<String, Object> mapKeys);
 	
-	boolean validateClassData(Class target);
+	String validateClassData(Map<String, Object> mapKeys);
 	
-	boolean validateRoomData(Room room);
+	String validateRoomData(Map<String, Object> mapKeys);
 
 	String validateCourseData(Map<String, Object> mapKeys);
 	

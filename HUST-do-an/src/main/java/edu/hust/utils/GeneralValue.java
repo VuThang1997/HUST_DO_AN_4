@@ -5,8 +5,8 @@ public class GeneralValue {
 	//from corner of Dai Co Viet to TC
 	public static final double minLongitude = 105.841582;
 	public static final double maxLongitude = 105.847237;
-	public static final double minLatitude = 21.002058;
-	public static final double maxLatitude = 21.003711;
+	public static final double minLatitude = 21.002048;
+	public static final double maxLatitude = 21.007368;
 	
 	//public static final int minSignalStrength = -70;
 	//public static final int maxSignalStrength = -30;
@@ -20,4 +20,6 @@ public class GeneralValue {
 	public static final int lengthOfNormalSemester = 150;		//unit: day
 	public static final int lengthOfSummerSemester = 30;		//unit: day
 	
+	public static final int minStudents = 15;			//unit: person
+	public static final int maxStudents = 100;			//unit: person
 }

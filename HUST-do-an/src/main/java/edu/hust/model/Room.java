@@ -25,7 +25,7 @@ public class Room implements Serializable {
 	@Column(name = "RoomName", nullable = false, unique = true)
 	private String roomName;
 	
-	@Column(name = "Address", nullable = false, length = 60, unique = true)
+	@Column(name = "Address", nullable = false, length = 60)
 	private String address;
 	
 	@Column(name = "GPSLatitude", nullable = false)

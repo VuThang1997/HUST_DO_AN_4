@@ -16,5 +16,9 @@ public interface RoomRepository extends JpaRepository<Room, Integer>{
 	boolean findByAddress(String address);
 
 	Optional<Room> findByIdAndMacAddress(int roomID, String macAddress);
+
+	Optional<Room> findByRoomName(String roomName);
+
+	Optional<Room> findByMacAddress(String macAddress);
 	
 }
