@@ -1,6 +1,7 @@
 package edu.hust.utils;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ public class ValidationDataImpl1 implements ValidationData {
 
 	private ValidationAccountData validationAccountData;
 	private ValidationUserData validationUserData;
+	private ValidationSemesterData validationSemesterData;
 
 	public ValidationDataImpl1() {
 		super();
@@ -28,10 +30,12 @@ public class ValidationDataImpl1 implements ValidationData {
 
 	@Autowired
 	public ValidationDataImpl1(@Qualifier("ValidationAccountDataImpl1") ValidationAccountData validationAccountData,
-			@Qualifier("ValidationUserDataImpl1") ValidationUserData validationUserData) {
+			@Qualifier("ValidationUserDataImpl1") ValidationUserData validationUserData,
+			@Qualifier("ValidationSemesterDataImpl1") ValidationSemesterData validationSemesterData) {
 		super();
 		this.validationAccountData = validationAccountData;
 		this.validationUserData = validationUserData;
+		this.validationSemesterData = validationSemesterData;
 	}
 
 	@Override
@@ -94,6 +98,42 @@ public class ValidationDataImpl1 implements ValidationData {
 			errorMessage = this.validationUserData.validatePhoneData(mapKeys.get("Phone").toString());
 		}
 
+		return errorMessage;
+	}
+	
+	@Override
+	public String validateSemesterData(Map<String, Object> mapKeys) {
+		String errorMessage = null;
+		String semesterName = null;
+		LocalDate beginDate = null;
+		LocalDate endDate = null;
+		
+		if (mapKeys.containsKey("ID")) {
+			int id = Integer.parseInt(mapKeys.get("ID").toString());
+			errorMessage = this.validationSemesterData.validateIdData(id);
+		}
+		
+		if (errorMessage == null) {
+			try {
+				semesterName = mapKeys.get("SemesterName").toString();
+				beginDate = LocalDate.parse(mapKeys.get("BeginDate").toString());
+				endDate = LocalDate.parse(mapKeys.get("EndDate").toString());
+				errorMessage = this.validationSemesterData.validateSemesterNameData(semesterName);
+				if (errorMessage == null) {
+					int validYear = Integer.parseInt(semesterName.substring(0, 4));
+					errorMessage = this.validationSemesterData.validateBeginDateData(beginDate, validYear);
+				}
+				if (errorMessage == null) {
+					int sequenceOfSemester = Integer.parseInt(semesterName.substring(4));
+					errorMessage = this.validationSemesterData.validateEndDateData(endDate, beginDate, sequenceOfSemester);
+				}
+				
+			} catch (DateTimeParseException e) {
+				e.printStackTrace();
+				return "Cannot parse BeginDate info!";
+			}
+		}
+		
 		return errorMessage;
 	}
 

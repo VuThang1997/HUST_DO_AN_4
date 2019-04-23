@@ -1,14 +1,18 @@
 package edu.hust.utils;
 
-import java.time.LocalTime;
+import java.time.LocalDate;
 
 public interface ValidationSemesterData {
 
 	String validateIdData(int id);
 	
+	/**
+	 * @param semesterName - should be in format "Year + sequence".Ex: 20181
+	 * @return
+	 */
 	String validateSemesterNameData(String semesterName);
 	
-	String validateBeginDateData(LocalTime beginDate);
+	String validateBeginDateData(LocalDate beginDate, int validYear);
 	
-	String validateEndDateData(LocalTime endDate);
+	String validateEndDateData(LocalDate endDate, LocalDate beginDate, int sequenceOfSemester);
 }

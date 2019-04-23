@@ -17,6 +17,8 @@ public interface ValidationData {
 	
 	String validateUserData(Map<String, Object> mapKeys);
 	
+	String validateSemesterData(Map<String, Object> mapKeys);
+	
 	boolean validateClassData(Class target);
 	
 	boolean validateRoomData(Room room);

@@ -1,7 +1,7 @@
 package edu.hust.model;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,8 +9,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "semester")
@@ -23,25 +21,31 @@ public class Semester implements Serializable {
 	@Column(name = "ID")
 	private int semesterID;
 
-	@Column(name = "SemesterName", nullable = false, length = 10, unique = true)
+	@Column(name = "SemesterName", nullable = false, length = 8, unique = true)
 	private String semesterName;
 
 	@Column(name = "BeginDate", nullable = false)
-	@Temporal(TemporalType.DATE)
-	private Date beginDate;
+	private LocalDate beginDate;
 
 	@Column(name = "EndDate", nullable = false)
-	@Temporal(TemporalType.DATE)
-	private Date endDate;
+	private LocalDate endDate;
 
 	public Semester() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public Semester(String name, Date beginDate, Date endDate) {
+	public Semester(String semesterName, LocalDate beginDate, LocalDate endDate) {
 		super();
-		this.semesterName = name;
+		this.semesterName = semesterName;
+		this.beginDate = beginDate;
+		this.endDate = endDate;
+	}
+
+	public Semester(int semesterID, String semesterName, LocalDate beginDate, LocalDate endDate) {
+		super();
+		this.semesterID = semesterID;
+		this.semesterName = semesterName;
 		this.beginDate = beginDate;
 		this.endDate = endDate;
 	}
@@ -54,19 +58,19 @@ public class Semester implements Serializable {
 		this.semesterName = name;
 	}
 
-	public Date getBeginDate() {
+	public LocalDate getBeginDate() {
 		return beginDate;
 	}
 
-	public void setBeginDate(Date beginDate) {
+	public void setBeginDate(LocalDate beginDate) {
 		this.beginDate = beginDate;
 	}
 
-	public Date getEndDate() {
+	public LocalDate getEndDate() {
 		return endDate;
 	}
 
-	public void setEndDate(Date endDate) {
+	public void setEndDate(LocalDate endDate) {
 		this.endDate = endDate;
 	}
 

@@ -64,7 +64,7 @@ public class AccountController {
 			errorMessage = this.validationData.validateAccountData(jsonMap);
 			if (errorMessage != null) {
 				return ResponseEntity.badRequest()
-						.body("Error code: 10;\n Content: Login failed because " + errorMessage);
+						.body("Error code: 10; Content: Login failed because " + errorMessage);
 			}
 
 			email = jsonMap.get("Email").toString();
@@ -72,7 +72,7 @@ public class AccountController {
 			Account account = this.accountService.findAccountByEmailAndPassword(email, password);
 			if (account == null) {
 				return new ResponseEntity<>(
-						"Error code: 11;\nContent: Authentication has failed or has not yet been provided!",
+						"Error code: 11;Content: Authentication has failed or has not yet been provided!",
 						HttpStatus.UNAUTHORIZED);
 			}
 
@@ -117,13 +117,13 @@ public class AccountController {
 			errorMessage = this.validationData.validateAccountData(jsonMap);
 			if (errorMessage != null) {
 				return ResponseEntity.badRequest()
-						.body("Error code: 12;\n Content: Registration failed because " + errorMessage);
+						.body("Error code: 12; Content: Registration failed because " + errorMessage);
 			}
 
 			email = jsonMap.get("Email").toString();
 			if (this.accountService.checkEmailIsUsed(email) != null) {
 				return ResponseEntity.badRequest().body(
-						"Error code: 13;\n Content: Registrantion failed because this email has already been used");
+						"Error code: 13; Content: Registrantion failed because this email has already been used");
 			}
 
 			username = jsonMap.get("Username").toString();
@@ -162,13 +162,13 @@ public class AccountController {
 			// check request body has enough info in right JSON format
 			if (!this.jsonMapUtil.checkKeysExist(jsonMap, "Email", "Role", "Password")) {
 				return ResponseEntity.badRequest()
-						.body("Error code: 01;\n Content: Json dynamic map lacks necessary key(s)!");
+						.body("Error code: 01; Content: Json dynamic map lacks necessary key(s)!");
 			}
 
 			errorMessage = this.validationData.validateAccountData(jsonMap);
 			if (errorMessage != null) {
 				return ResponseEntity.badRequest()
-						.body("Error code: 14;\n Content: Deactive account failed because " + errorMessage);
+						.body("Error code: 14; Content: Deactive account failed because " + errorMessage);
 			}
 
 			email = jsonMap.get("Email").toString();
@@ -179,13 +179,13 @@ public class AccountController {
 			}
 
 			return new ResponseEntity<>(
-					"Error code: 11;\n Content: Authentication has failed or has not yet been provided!",
+					"Error code: 11; Content: Authentication has failed or has not yet been provided!",
 					HttpStatus.UNAUTHORIZED);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					"Error code: 02;\n Content: Error happened when jackson deserialization info !");
+					"Error code: 02; Content: Error happened when jackson deserialization info !");
 		}
 	}
 
@@ -206,13 +206,13 @@ public class AccountController {
 			// check request body has enough info in right JSON format
 			if (!this.jsonMapUtil.checkKeysExist(jsonMap, "Email", "Role", "Password")) {
 				return ResponseEntity.badRequest()
-						.body("Error code: 01;\n Content: Json dynamic map lacks necessary key(s)!");
+						.body("Error code: 01; Content: Json dynamic map lacks necessary key(s)!");
 			}
 
 			errorMessage = this.validationData.validateAccountData(jsonMap);
 			if (errorMessage != null) {
 				return ResponseEntity.badRequest()
-						.body("Error code: 15;\n Content: Active account failed because " + errorMessage);
+						.body("Error code: 15; Content: Active account failed because " + errorMessage);
 			}
 
 			email = jsonMap.get("Email").toString();
@@ -223,13 +223,13 @@ public class AccountController {
 			}
 
 			return new ResponseEntity<>(
-					"Error code: 11;\n Content: Authentication has failed or has not yet been provided!",
+					"Error code: 11; Content: Authentication has failed or has not yet been provided!",
 					HttpStatus.UNAUTHORIZED);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					"Error code: 02;\n Content: Error happened when jackson deserialization info !");
+					"Error code: 02; Content: Error happened when jackson deserialization info !");
 		}
 	}
 
@@ -246,7 +246,7 @@ public class AccountController {
 			errorMessage = this.validationData.validateAccountData(jsonMap);
 			if (errorMessage != null) {
 				return ResponseEntity.badRequest()
-						.body("Error code: 16;\n Content: Getting account info failed because " + errorMessage);
+						.body("Error code: 16; Content: Getting account info failed because " + errorMessage);
 			}
 
 			Account account = this.accountService.findAccountByEmailAndPassword(email, password);
@@ -255,12 +255,12 @@ public class AccountController {
 			}
 
 			return new ResponseEntity<>(
-					"Error code: 11;\n Content: Authentication has failed or has not yet been provided!",
+					"Error code: 11; Content: Authentication has failed or has not yet been provided!",
 					HttpStatus.UNAUTHORIZED);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					"Error code: 03;\n Content: Json map get error when putting element(s) !");
+					"Error code: 03; Content: Json map get error when putting element(s) !");
 		}
 	}
 
