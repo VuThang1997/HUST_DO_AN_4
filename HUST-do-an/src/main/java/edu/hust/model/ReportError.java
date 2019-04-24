@@ -4,14 +4,14 @@ public class ReportError {
 
 	private int errorCode;
 	
-	private int description;
+	private String description;
 
 	public ReportError() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public ReportError(int errorCode, int description) {
+	public ReportError(int errorCode, String description) {
 		super();
 		this.errorCode = errorCode;
 		this.description = description;
@@ -25,12 +25,17 @@ public class ReportError {
 		this.errorCode = errorCode;
 	}
 
-	public int getDescription() {
+	public String getDescription() {
 		return description;
 	}
 
-	public void setDescription(int description) {
+	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	@Override
+	public String toString() {
+		return "{\"errorCode\" : " + errorCode + ", \"description\" : "+ description + "}";
 	}
 	
 	

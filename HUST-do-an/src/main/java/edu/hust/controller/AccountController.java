@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.hust.enumData.AccountRole;
 import edu.hust.enumData.AccountStatus;
 import edu.hust.model.Account;
+import edu.hust.model.ReportError;
 import edu.hust.model.User;
 import edu.hust.service.AccountService;
 import edu.hust.utils.JsonMapUtil;
@@ -49,6 +50,7 @@ public class AccountController {
 		String email = null;
 		String password = null;
 		String errorMessage = null;
+		ReportError report = null;
 
 		try {
 			objectMapper = new ObjectMapper();
@@ -56,30 +58,29 @@ public class AccountController {
 			});
 
 			// check request body has enough info in right JSON format
-			if (!this.jsonMapUtil.checkKeysExist(jsonMap, "Email", "Password")) {
-				return ResponseEntity.badRequest()
-						.body("Error code: 01; Content: Json dynamic map lacks necessary key(s)!");
+			if (!this.jsonMapUtil.checkKeysExist(jsonMap, "email", "password")) {
+				report = new ReportError(1, "Json dynamic map lacks necessary key(s)!");
+				return ResponseEntity.badRequest().body(report);
 			}
 
 			errorMessage = this.validationData.validateAccountData(jsonMap);
 			if (errorMessage != null) {
-				return ResponseEntity.badRequest()
-						.body("Error code: 10; Content: Login failed because " + errorMessage);
+				report = new ReportError(10, "Login failed because " + errorMessage);
+				return ResponseEntity.badRequest().body(report);
 			}
 
-			email = jsonMap.get("Email").toString();
-			password = jsonMap.get("Password").toString();
+			email = jsonMap.get("email").toString();
+			password = jsonMap.get("password").toString();
 			Account account = this.accountService.findAccountByEmailAndPassword(email, password);
 			if (account == null) {
-				return new ResponseEntity<>(
-						"Error code: 11;Content: Authentication has failed or has not yet been provided!",
-						HttpStatus.UNAUTHORIZED);
+				report = new ReportError(11, "Authentication has failed or has not yet been provided!");
+				return new ResponseEntity<>(report, HttpStatus.UNAUTHORIZED);
 			}
 
 			// in the first login, student will be redirect to Update info page
 			if (account.getRole() == AccountRole.STUDENT.getValue()) {
-				if (account.getImei() == null || account.getImei().isEmpty()) {
-					account.setImei("redirect");
+				if (account.getImei() == null || account.getImei().isBlank()) {
+					account.setImei(null);
 				}
 			}
 
@@ -87,8 +88,8 @@ public class AccountController {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					"Error code: 02; Content: Error happened when jackson deserialization info !");
+			report = new ReportError(2, "Error happened when jackson deserialization info!");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, report.toString());
 		}
 	}
 
@@ -109,7 +110,7 @@ public class AccountController {
 			});
 
 			// check request body has enough info in right JSON format
-			if (!this.jsonMapUtil.checkKeysExist(jsonMap, "Email", "Username", "Role", "Password")) {
+			if (!this.jsonMapUtil.checkKeysExist(jsonMap, "email", "username", "role", "password")) {
 				return ResponseEntity.badRequest()
 						.body("Error code: 01; Content: Json dynamic map lacks necessary key(s)!");
 			}
@@ -120,15 +121,15 @@ public class AccountController {
 						.body("Error code: 12; Content: Registration failed because " + errorMessage);
 			}
 
-			email = jsonMap.get("Email").toString();
+			email = jsonMap.get("email").toString();
 			if (this.accountService.checkEmailIsUsed(email) != null) {
 				return ResponseEntity.badRequest().body(
 						"Error code: 13; Content: Registrantion failed because this email has already been used");
 			}
 
-			username = jsonMap.get("Username").toString();
-			password = jsonMap.get("Password").toString();
-			role = Integer.parseUnsignedInt(jsonMap.get("Role").toString());
+			username = jsonMap.get("username").toString();
+			password = jsonMap.get("password").toString();
+			role = Integer.parseUnsignedInt(jsonMap.get("role").toString());
 
 			account = new Account(username, password, role, email);
 			account.setIsActive(AccountStatus.INACTIVE.getValue());
@@ -160,7 +161,7 @@ public class AccountController {
 			});
 
 			// check request body has enough info in right JSON format
-			if (!this.jsonMapUtil.checkKeysExist(jsonMap, "Email", "Role", "Password")) {
+			if (!this.jsonMapUtil.checkKeysExist(jsonMap, "email", "role", "password")) {
 				return ResponseEntity.badRequest()
 						.body("Error code: 01; Content: Json dynamic map lacks necessary key(s)!");
 			}
@@ -204,7 +205,7 @@ public class AccountController {
 			});
 
 			// check request body has enough info in right JSON format
-			if (!this.jsonMapUtil.checkKeysExist(jsonMap, "Email", "Role", "Password")) {
+			if (!this.jsonMapUtil.checkKeysExist(jsonMap, "email", "role", "password")) {
 				return ResponseEntity.badRequest()
 						.body("Error code: 01; Content: Json dynamic map lacks necessary key(s)!");
 			}
@@ -234,8 +235,8 @@ public class AccountController {
 	}
 
 	@RequestMapping(value = "/accounts", method = RequestMethod.GET)
-	public ResponseEntity<?> getAccountInfo(@RequestHeader(value = "Email", required = true) String email,
-			@RequestHeader(value = "Password", required = true) String password) {
+	public ResponseEntity<?> getAccountInfo(@RequestHeader(value = "email", required = true) String email,
+			@RequestHeader(value = "password", required = true) String password) {
 		Map<String, Object> jsonMap = null;
 		String errorMessage = null;
 		try {
@@ -265,8 +266,8 @@ public class AccountController {
 	}
 
 	@RequestMapping(value = "/accounts", method = RequestMethod.PATCH)
-	public ResponseEntity<?> updateAccountInfo(@RequestHeader(value = "Email") String email,
-			@RequestHeader(value = "Password") String password, @RequestBody String accountInfo) {
+	public ResponseEntity<?> updateAccountInfo(@RequestHeader(value = "email") String email,
+			@RequestHeader(value = "password") String password, @RequestBody String accountInfo) {
 		ObjectMapper objectMapper = null;
 		Map<String, Object> jsonMap = null;
 		Account account = null;
@@ -354,7 +355,7 @@ public class AccountController {
 			});
 
 			// check request body has enough info in right JSON format
-			if (!this.jsonMapUtil.checkKeysExist(jsonMap, "ID", "Birthday", "Phone", "Address", "FullName")) {
+			if (!this.jsonMapUtil.checkKeysExist(jsonMap, "id", "birthday", "phone", "address", "fullName")) {
 				return ResponseEntity.badRequest()
 						.body("Error code: 01; Content: Json dynamic map lacks necessary key(s)!");
 			}
