@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 24, 2019 at 07:43 AM
+-- Generation Time: May 01, 2019 at 08:38 PM
 -- Server version: 10.1.37-MariaDB
 -- PHP Version: 7.3.1
 
@@ -70,7 +70,8 @@ CREATE TABLE `class` (
 --
 
 INSERT INTO `class` (`ID`, `CurrentLesson`, `IdentifyString`, `IsChecked`, `MaxStudent`, `ClassName`, `NumberOfLessons`, `CourseID`, `SemesterID`) VALUES
-(2, 1, NULL, NULL, 14, 'class1', 31, 1, 1);
+(2, 4, '[B@17b0d28', '2019-122-5617', 14, 'class1', 31, 1, 1),
+(3, 0, NULL, NULL, 20, 'classTest2', 34, 1, 9);
 
 -- --------------------------------------------------------
 
@@ -92,7 +93,9 @@ CREATE TABLE `class_room` (
 --
 
 INSERT INTO `class_room` (`ID`, `BeginAt`, `FinishAt`, `Weekday`, `ClassID`, `RoomID`) VALUES
-(1, '11:00:00', '23:00:00', 2, 2, 1);
+(1, '11:00:00', '23:00:00', 2, 2, 1),
+(2, '13:30:00', '16:00:00', 6, 2, 1),
+(3, '00:00:00', '02:00:00', 5, 2, 1);
 
 -- --------------------------------------------------------
 
@@ -134,9 +137,9 @@ CREATE TABLE `room` (
 --
 
 INSERT INTO `room` (`ID`, `Address`, `GPSLatitude`, `GPSLongitude`, `MacAddress`, `RoomName`) VALUES
-(1, 'Nha D3, DH BKHN', 21.004722, 105.84508, '11:14:22:01', 'D3-503'),
+(1, 'Nha D3, DH BKHN', 21.004694, 105.844997, '11:14:22:01', 'D3-503'),
 (2, 'Nha D3, DH BKHN', 21.003752, 105.84423, '00:14:22:01', 'D3-501'),
-(3, 'Nha D3, DH BKHN', 21.003452, 105.84424, '00:15:22:01', 'D3-502');
+(3, 'Nha D3, DH BKHN', 21.004692, 105.845112, '00:15:22:01', 'D3-502');
 
 -- --------------------------------------------------------
 
@@ -176,6 +179,13 @@ CREATE TABLE `student_class` (
   `ClassID` int(1) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+--
+-- Dumping data for table `student_class`
+--
+
+INSERT INTO `student_class` (`ID`, `IsChecked`, `IsLearning`, `listRollCall`, `StudentID`, `ClassID`) VALUES
+(1, NULL, 1, '2019-115-5431;', 1, 2);
+
 -- --------------------------------------------------------
 
 --
@@ -195,7 +205,7 @@ CREATE TABLE `teacher_class` (
 --
 
 INSERT INTO `teacher_class` (`ID`, `IsTeaching`, `ListRollCall`, `TeacherID`, `ClassID`) VALUES
-(1, 1, '2019-112-76494;', 2, 2);
+(1, 1, '2019-115-4952;2019-122-5617;', 2, 2);
 
 --
 -- Indexes for dumped tables
@@ -282,7 +292,7 @@ ALTER TABLE `class`
 -- AUTO_INCREMENT for table `class_room`
 --
 ALTER TABLE `class_room`
-  MODIFY `ID` int(1) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `ID` int(1) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `course`
@@ -306,7 +316,7 @@ ALTER TABLE `semester`
 -- AUTO_INCREMENT for table `student_class`
 --
 ALTER TABLE `student_class`
-  MODIFY `ID` int(1) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `ID` int(1) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `teacher_class`

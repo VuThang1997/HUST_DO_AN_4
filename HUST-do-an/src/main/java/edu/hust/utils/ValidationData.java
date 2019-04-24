@@ -2,8 +2,6 @@ package edu.hust.utils;
 
 import java.util.Map;
 
-import edu.hust.model.ClassRoom;
-
 /**
  * @author BePro
  *
@@ -22,7 +20,7 @@ public interface ValidationData {
 
 	String validateCourseData(Map<String, Object> mapKeys);
 	
-	boolean validateClassRoomData(ClassRoom classRoom);
+	String validateClassRoomData(Map<String, Object> mapKeys);
 	
 	boolean validateTeacherClassData(int teacherID, int classID, int isTeaching);
 

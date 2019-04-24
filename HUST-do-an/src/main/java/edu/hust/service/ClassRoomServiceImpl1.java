@@ -10,9 +10,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import edu.hust.model.ClassRoom;
-import edu.hust.repository.ClassRepository;
 import edu.hust.repository.ClassRoomRepository;
-import edu.hust.repository.RoomRepository;
 
 @Service
 
@@ -20,32 +18,21 @@ import edu.hust.repository.RoomRepository;
 public class ClassRoomServiceImpl1 implements ClassRoomService {
 
 	private ClassRoomRepository classRoomRepository;
-	private ClassRepository classRepository;
-	private RoomRepository roomRepository;
-
 	public ClassRoomServiceImpl1() {
 		super();
 		// TODO Auto-generated constructor stub }
 	}
 
 	@Autowired
-	public ClassRoomServiceImpl1(ClassRoomRepository classRoomRepository, ClassRepository classRepository,
-			RoomRepository roomRepository) {
+	public ClassRoomServiceImpl1(ClassRoomRepository classRoomRepository) {
 		super();
 		this.classRoomRepository = classRoomRepository;
-		this.classRepository = classRepository;
-		this.roomRepository = roomRepository;
 	}
 
 	@Override
 	public boolean addNewClassRoom(ClassRoom classRoom) {
 		if (classRoom.getId() > 0) {
 			classRoom.setId(-1);
-		}
-
-		if (!this.classRepository.existsById(classRoom.getClassInstance().getId())
-				|| !this.roomRepository.existsById(classRoom.getRoom().getId())) {
-			return false;
 		}
 
 		this.classRoomRepository.save(classRoom);
@@ -71,6 +58,52 @@ public class ClassRoomServiceImpl1 implements ClassRoomService {
 				weekday, checkTime);
 		
 		return classRoom.isPresent() ? classRoom.get() : null;
+	}
+
+	@Override
+	public List<ClassRoom> checkClassAvailable(int classID, int weekday, LocalTime beginAt, LocalTime finishAt) {
+		List<ClassRoom> listClass = this.classRoomRepository.findClassesByIdAndWeekdayAndDuration(classID, weekday, beginAt, finishAt);
+		if (listClass == null || listClass.isEmpty()) {
+			return null;
+		}
+		
+		return listClass;
+	}
+
+	@Override
+	public List<ClassRoom> checkRoomAvailable(int roomID, int weekday, LocalTime beginAt, LocalTime finishAt) {
+		List<ClassRoom> listRoom = this.classRoomRepository.findRoomByIdAndWeekdayAndDuration(roomID, weekday, beginAt, finishAt);
+		if (listRoom == null || listRoom.isEmpty()) {
+			return null;
+		}
+		return listRoom;
+	}
+
+	@Override
+	public ClassRoom findClassRoomByID(int id) {
+		Optional<ClassRoom> classRoom = this.classRoomRepository.findById(id);
+		if (classRoom.isPresent()) {
+			return classRoom.get();
+		}
+		return null;
+	}
+
+	@Override
+	public void updateClassRoomInfo(ClassRoom classRoom) {
+		this.classRoomRepository.save(classRoom);
+		return;
+	}
+
+	@Override
+	public boolean deleteClassRoom(ClassRoom classRoom) {
+		try {
+			this.classRoomRepository.deleteById(classRoom.getId());
+			return true;
+		} catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		
 	}
 
 }

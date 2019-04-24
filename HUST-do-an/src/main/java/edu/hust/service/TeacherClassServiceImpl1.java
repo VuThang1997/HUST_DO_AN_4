@@ -213,4 +213,13 @@ public class TeacherClassServiceImpl1 implements TeacherClassService {
 
 	}
 
+	@Override
+	public List<TeacherClass> findByClassID(int id) {
+		List<TeacherClass> listInstance = this.teacherClassRepository.getListTeacherClass(id);
+		if (listInstance == null || listInstance.isEmpty()) {
+			return null;
+		}
+		return listInstance;
+	}
+
 }

@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import edu.hust.model.ClassRoom;
+import edu.hust.model.TeacherClass;
 
 public interface TeacherClassService {
 
@@ -31,4 +32,6 @@ public interface TeacherClassService {
 	String generateIdentifyString(int classID, int roomID, int weekday, String inputMd5);
 	
 	boolean rollCall(LocalDateTime rollCallAt, int teacherID, int classID);
+
+	List<TeacherClass> findByClassID(int id);
 }

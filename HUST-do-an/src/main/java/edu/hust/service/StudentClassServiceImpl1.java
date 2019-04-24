@@ -61,7 +61,6 @@ public class StudentClassServiceImpl1 implements StudentClassService {
 				classID, IsLearning.LEARNING.getValue());
 
 		if (studentClass.isEmpty()) {
-			System.out.println("\n\nMile 1");
 			return false;
 		}
 
@@ -71,7 +70,6 @@ public class StudentClassServiceImpl1 implements StudentClassService {
 
 		// check if identifyString is incorrect or imei is incorrect
 		if (!classIdentifyString.equals(identifyString) || !studentImei.equals(imei)) {
-			System.out.println("\n\nMile 1");
 			return false;
 		}
 
@@ -81,7 +79,6 @@ public class StudentClassServiceImpl1 implements StudentClassService {
 		LocalTime checkTime = LocalTime.now();
 		ClassRoom classRoom = this.classRoomService.getInfoClassRoom(classID, roomID, weekday, checkTime);
 		if (classRoom == null) {
-			System.out.println("\n\nMile 2");
 			return false;
 		}
 
@@ -103,7 +100,6 @@ public class StudentClassServiceImpl1 implements StudentClassService {
 			//check if a day has more than one lesson of a class
 			if (LocalDate.now().isEqual(checkedDate) && checkedTime.isAfter(classRoom.getBeginAt())
 					&& checkedTime.isBefore(classRoom.getFinishAt())) {
-				System.out.println("\n\nMile 3");
 				return false;
 			}
 		}
@@ -146,5 +142,14 @@ public class StudentClassServiceImpl1 implements StudentClassService {
 
 		return true;
 
+	}
+
+	@Override
+	public List<StudentClass> findByClassID(int id) {
+		List<StudentClass> listInstance = this.studentClassRepository.getListStudentClass(id);
+		if (listInstance == null || listInstance.isEmpty()) {
+			return null;
+		}
+		return listInstance;
 	}
 }

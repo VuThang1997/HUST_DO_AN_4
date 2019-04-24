@@ -8,4 +8,6 @@ import edu.hust.model.StudentClass;
 @Repository
 public interface StudentClassRepository extends JpaRepository<StudentClass, Integer>, CustomStudentClassRepository{
 
+	
+
 }

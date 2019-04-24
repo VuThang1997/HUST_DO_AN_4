@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import edu.hust.model.ClassRoom;
+import edu.hust.model.StudentClass;
 
 /**
  * @author BePro
@@ -29,4 +30,6 @@ public interface StudentClassService {
 	//boolean checkGenerateTimeValid(int weekday, LocalTime generateTime, int classID, int roomID);
 	
 	boolean rollCall(int classID, int studentID, LocalDateTime rollCallAt);
+
+	List<StudentClass> findByClassID(int id);
 }

@@ -14,7 +14,15 @@ public interface ClassRoomService {
 	ClassRoom getInfoClassRoom(int classID, int roomID, int weekday, LocalTime checkTime);
 
 	boolean updateClassRoomInfo(int roomID, int classID, ClassRoom classRoom);
-	
-	
 
+	List<ClassRoom> checkClassAvailable(int classID, int weekday, LocalTime beginAt, LocalTime finishAt);
+
+	List<ClassRoom> checkRoomAvailable(int roomID, int weekday, LocalTime beginAt, LocalTime finishAt);
+
+	ClassRoom findClassRoomByID(int id);
+
+	void updateClassRoomInfo(ClassRoom classRoom);
+
+	boolean deleteClassRoom(ClassRoom classRoom);
+	
 }

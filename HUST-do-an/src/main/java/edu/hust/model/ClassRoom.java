@@ -57,6 +57,13 @@ public class ClassRoom implements Serializable{
 		this.weekday = weekday;
 	}
 
+	public ClassRoom(LocalTime beginAt, LocalTime finishAt, int weekday) {
+		super();
+		this.beginAt = beginAt;
+		this.finishAt = finishAt;
+		this.weekday = weekday;
+	}
+
 	public int getId() {
 		return id;
 	}

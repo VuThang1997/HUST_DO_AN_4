@@ -95,14 +95,14 @@ public class ClassController {
 				return ResponseEntity.badRequest().body(report);
 			}
 
-			courseID = Integer.parseUnsignedInt(jsonMap.get("courseID").toString());
+			courseID = Integer.parseInt(jsonMap.get("courseID").toString());
 			course = this.courseService.getCourseInfo(courseID);
 			if (course == null) {
 				report = new ReportError(43, "This course do not exist!");
 				return new ResponseEntity<>(report, HttpStatus.NOT_FOUND);
 			}
 
-			semesterId = Integer.parseUnsignedInt(jsonMap.get("semesterID").toString());
+			semesterId = Integer.parseInt(jsonMap.get("semesterID").toString());
 			semester = this.semesterService.findSemesterById(semesterId);
 			if (semester == null) {
 				report = new ReportError(33, "This semester do not exist!");

@@ -12,7 +12,6 @@ import edu.hust.repository.RoomRepository;
 import edu.hust.utils.GeneralValue;
 
 @Service
-
 @Qualifier("RoomServiceImpl1")
 public class RoomServiceImpl1 implements RoomService {
 

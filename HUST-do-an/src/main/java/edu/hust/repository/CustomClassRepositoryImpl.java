@@ -20,7 +20,7 @@ public class CustomClassRepositoryImpl implements CustomClassRepository {
 	@Override
 	public void setNullIdentifyString(int id, String eventName) {
 		String sql = " CREATE EVENT IF NOT EXISTS " + eventName
-				+ "   ON SCHEDULE AT NOW() + INTERVAL 20 MINUTE "
+				+ "   ON SCHEDULE AT NOW() + INTERVAL 10 MINUTE "
 				+ "   DO "
 				+ "    UPDATE class "
 				+ "    SET IdentifyString = NULL "
