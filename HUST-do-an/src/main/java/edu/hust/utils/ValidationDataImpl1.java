@@ -50,30 +50,30 @@ public class ValidationDataImpl1 implements ValidationData {
 	public String validateAccountData(Map<String, Object> mapKeys) {
 		String errorMessage = null;
 
-		if (mapKeys.containsKey("ID")) {
-			int id = Integer.parseInt(mapKeys.get("ID").toString());
+		if (mapKeys.containsKey("id")) {
+			int id = Integer.parseInt(mapKeys.get("id").toString());
 			errorMessage = this.validationAccountData.validateIdData(id);
 		}
 
-		if (errorMessage == null && mapKeys.containsKey("Username")) {
-			errorMessage = this.validationAccountData.validateUsernameData(mapKeys.get("Username").toString());
+		if (errorMessage == null && mapKeys.containsKey("username")) {
+			errorMessage = this.validationAccountData.validateUsernameData(mapKeys.get("username").toString());
 		}
 
-		if (errorMessage == null && mapKeys.containsKey("Password")) {
+		if (errorMessage == null && mapKeys.containsKey("password")) {
 			;
-			errorMessage = this.validationAccountData.validatePasswordData(mapKeys.get("Password").toString());
+			errorMessage = this.validationAccountData.validatePasswordData(mapKeys.get("password").toString());
 		}
 
-		if (errorMessage == null && mapKeys.containsKey("Imei")) {
-			errorMessage = this.validationAccountData.validateImeiData(mapKeys.get("Imei").toString());
+		if (errorMessage == null && mapKeys.containsKey("imei")) {
+			errorMessage = this.validationAccountData.validateImeiData(mapKeys.get("imei").toString());
 		}
 
-		if (errorMessage == null && mapKeys.containsKey("Email")) {
-			errorMessage = this.validationAccountData.validateEmailData(mapKeys.get("Email").toString());
+		if (errorMessage == null && mapKeys.containsKey("email")) {
+			errorMessage = this.validationAccountData.validateEmailData(mapKeys.get("email").toString());
 		}
 
-		if (errorMessage == null && mapKeys.containsKey("Role")) {
-			int role = Integer.parseInt(mapKeys.get("Role").toString());
+		if (errorMessage == null && mapKeys.containsKey("role")) {
+			int role = Integer.parseInt(mapKeys.get("role").toString());
 			errorMessage = this.validationAccountData.validateRoleData(role);
 		}
 
@@ -84,26 +84,26 @@ public class ValidationDataImpl1 implements ValidationData {
 	public String validateUserData(Map<String, Object> mapKeys) {
 		String errorMessage = null;
 
-		if (mapKeys.containsKey("ID")) {
-			int id = Integer.parseInt(mapKeys.get("ID").toString());
+		if (mapKeys.containsKey("id")) {
+			int id = Integer.parseInt(mapKeys.get("id").toString());
 			errorMessage = this.validationUserData.validateIdData(id);
 		}
 
-		if (errorMessage == null && mapKeys.containsKey("Address")) {
-			errorMessage = this.validationUserData.validateAddressData(mapKeys.get("Address").toString());
+		if (errorMessage == null && mapKeys.containsKey("address")) {
+			errorMessage = this.validationUserData.validateAddressData(mapKeys.get("address").toString());
 		}
 		
-		if (errorMessage == null && mapKeys.containsKey("FullName")) {
-			errorMessage = this.validationUserData.validateFullNameData(mapKeys.get("FullName").toString());
+		if (errorMessage == null && mapKeys.containsKey("fullName")) {
+			errorMessage = this.validationUserData.validateFullNameData(mapKeys.get("fullName").toString());
 		}
 
-		if (errorMessage == null && mapKeys.containsKey("Birthday")) {
-			LocalDate birthday = LocalDate.parse(mapKeys.get("Birthday").toString());
+		if (errorMessage == null && mapKeys.containsKey("birthday")) {
+			LocalDate birthday = LocalDate.parse(mapKeys.get("birthday").toString());
 			errorMessage = this.validationUserData.validateBirthdayData(birthday);
 		}
 
-		if (errorMessage == null && mapKeys.containsKey("Phone")) {
-			errorMessage = this.validationUserData.validatePhoneData(mapKeys.get("Phone").toString());
+		if (errorMessage == null && mapKeys.containsKey("phone")) {
+			errorMessage = this.validationUserData.validatePhoneData(mapKeys.get("phone").toString());
 		}
 
 		return errorMessage;

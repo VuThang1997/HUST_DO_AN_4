@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 22, 2019 at 04:16 PM
+-- Generation Time: Apr 24, 2019 at 07:43 AM
 -- Server version: 10.1.37-MariaDB
 -- PHP Version: 7.3.1
 
@@ -44,8 +44,8 @@ CREATE TABLE `account` (
 --
 
 INSERT INTO `account` (`ID`, `Email`, `IMEI`, `IsActive`, `Password`, `Role`, `UserInfo`, `Username`) VALUES
-(1, 'emailStudent1@gmail.com', '12345', 1, '12345', 3, 'V H T+DH BKHN+1234567890+1979-10-01', 'testUpdate'),
-(2, 'teacher1@gmail.com', NULL, 2, '12345678', 2, NULL, 'teacher1');
+(1, 'emailStudent2@gmail.com', '123456', 1, '12345', 3, 'V H T+DH BKHN+1234567890+1979-01-01', 'testUpdate'),
+(2, 'teacher1@gmail.com', '123456', 2, '123', 2, 'V H T 3+DH BKHN+1234567890+1997-10-01', 'testTeacher');
 
 -- --------------------------------------------------------
 
@@ -70,7 +70,7 @@ CREATE TABLE `class` (
 --
 
 INSERT INTO `class` (`ID`, `CurrentLesson`, `IdentifyString`, `IsChecked`, `MaxStudent`, `ClassName`, `NumberOfLessons`, `CourseID`, `SemesterID`) VALUES
-(2, 1, '[B@6a1c06d', '2019-112-76493', 14, 'class1', 31, 1, 1);
+(2, 1, NULL, NULL, 14, 'class1', 31, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -111,7 +111,8 @@ CREATE TABLE `course` (
 --
 
 INSERT INTO `course` (`ID`, `CourseName`, `Description`) VALUES
-(1, 'course1', NULL);
+(1, 'course1', NULL),
+(2, 'Kĩ thuật máy tính', NULL);
 
 -- --------------------------------------------------------
 
@@ -133,7 +134,9 @@ CREATE TABLE `room` (
 --
 
 INSERT INTO `room` (`ID`, `Address`, `GPSLatitude`, `GPSLongitude`, `MacAddress`, `RoomName`) VALUES
-(1, 'room1', 23, 23.33, '01:00:00:01', 'room1');
+(1, 'Nha D3, DH BKHN', 21.004722, 105.84508, '11:14:22:01', 'D3-503'),
+(2, 'Nha D3, DH BKHN', 21.003752, 105.84423, '00:14:22:01', 'D3-501'),
+(3, 'Nha D3, DH BKHN', 21.003452, 105.84424, '00:15:22:01', 'D3-502');
 
 -- --------------------------------------------------------
 
@@ -153,7 +156,10 @@ CREATE TABLE `semester` (
 --
 
 INSERT INTO `semester` (`ID`, `BeginDate`, `EndDate`, `SemesterName`) VALUES
-(1, '1997-01-01', '1997-03-01', '20181');
+(1, '2018-01-01', '2018-05-02', '20181'),
+(6, '2018-09-01', '2019-01-15', '20182'),
+(8, '2017-01-01', '2017-01-15', '20172'),
+(9, '2019-04-30', '2019-06-15', '20191');
 
 -- --------------------------------------------------------
 
@@ -230,7 +236,6 @@ ALTER TABLE `course`
 --
 ALTER TABLE `room`
   ADD PRIMARY KEY (`ID`),
-  ADD UNIQUE KEY `UK_asibxai3h6rjf64k4l4hqxpm5` (`Address`),
   ADD UNIQUE KEY `UK_342lvox58bu66dypyvh5bd8cb` (`MacAddress`),
   ADD UNIQUE KEY `UK_ixynujpupl0sfknw9yru7bvym` (`RoomName`);
 
@@ -271,7 +276,7 @@ ALTER TABLE `account`
 -- AUTO_INCREMENT for table `class`
 --
 ALTER TABLE `class`
-  MODIFY `ID` int(1) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `ID` int(1) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `class_room`
@@ -283,19 +288,19 @@ ALTER TABLE `class_room`
 -- AUTO_INCREMENT for table `course`
 --
 ALTER TABLE `course`
-  MODIFY `ID` int(1) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `ID` int(1) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `room`
 --
 ALTER TABLE `room`
-  MODIFY `ID` int(1) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `ID` int(1) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `semester`
 --
 ALTER TABLE `semester`
-  MODIFY `ID` int(1) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `ID` int(1) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `student_class`
@@ -340,14 +345,6 @@ ALTER TABLE `student_class`
 ALTER TABLE `teacher_class`
   ADD CONSTRAINT `FK_teacherClass_class` FOREIGN KEY (`ClassID`) REFERENCES `class` (`ID`),
   ADD CONSTRAINT `FK_teacherClass_teacher` FOREIGN KEY (`TeacherID`) REFERENCES `account` (`ID`);
-
-DELIMITER $$
---
--- Events
---
-CREATE DEFINER=`hustStdent2`@`localhost` EVENT `generateIdentifyString1` ON SCHEDULE AT '2019-04-22 21:34:54' ON COMPLETION NOT PRESERVE ENABLE DO UPDATE class     SET IdentifyString = NULL     WHERE class.ID = 2$$
-
-DELIMITER ;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
