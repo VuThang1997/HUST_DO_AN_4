@@ -35,7 +35,7 @@ public class ReportError {
 
 	@Override
 	public String toString() {
-		return "{\"errorCode\" : " + errorCode + ", \"description\" : "+ description + "}";
+		return "{\"errorCode\" : \"" + errorCode + "\", \"description\" : \""+ description + "\"}";
 	}
 	
 	

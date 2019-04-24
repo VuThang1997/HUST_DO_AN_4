@@ -116,16 +116,16 @@ public class ValidationDataImpl1 implements ValidationData {
 		LocalDate beginDate = null;
 		LocalDate endDate = null;
 		
-		if (mapKeys.containsKey("ID")) {
-			int id = Integer.parseInt(mapKeys.get("ID").toString());
+		if (mapKeys.containsKey("id")) {
+			int id = Integer.parseInt(mapKeys.get("id").toString());
 			errorMessage = this.validationSemesterData.validateIdData(id);
 		}
 		
 		if (errorMessage == null) {
 			try {
-				semesterName = mapKeys.get("SemesterName").toString();
-				beginDate = LocalDate.parse(mapKeys.get("BeginDate").toString());
-				endDate = LocalDate.parse(mapKeys.get("EndDate").toString());
+				semesterName = mapKeys.get("semesterName").toString();
+				beginDate = LocalDate.parse(mapKeys.get("beginDate").toString());
+				endDate = LocalDate.parse(mapKeys.get("endDate").toString());
 				
 				errorMessage = this.validationSemesterData.validateSemesterNameData(semesterName);
 				if (errorMessage == null) {
@@ -149,30 +149,32 @@ public class ValidationDataImpl1 implements ValidationData {
 	public String validateRoomData(Map<String, Object> mapKeys) {
 		String errorMessage = null;
 		
-		if (mapKeys.containsKey("ID")) {
-			int id = Integer.parseInt(mapKeys.get("ID").toString());
+		if (mapKeys.containsKey("id")) {
+			int id = Integer.parseInt(mapKeys.get("id").toString());
 			errorMessage = this.validationRoomData.validateIdData(id);
 		}
 		
-		if (errorMessage == null && mapKeys.containsKey("RoomName")) {
-			errorMessage = this.validationRoomData.validateRoomNameData(mapKeys.get("RoomName").toString());
+		if (errorMessage == null && mapKeys.containsKey("roomName")) {
+			errorMessage = this.validationRoomData.validateRoomNameData(mapKeys.get("roomName").toString());
 		}
 		
-		if (errorMessage == null && mapKeys.containsKey("Address")) {
-			errorMessage = this.validationRoomData.validateAddressData(mapKeys.get("Address").toString());
+		if (errorMessage == null && mapKeys.containsKey("address")) {
+			errorMessage = this.validationRoomData.validateAddressData(mapKeys.get("address").toString());
 		}
 		
-		if (errorMessage == null && mapKeys.containsKey("MacAddress")) {
-			errorMessage = this.validationRoomData.validateMacAddressData(mapKeys.get("MacAddress").toString());
-		}
+		/*
+		 * if (errorMessage == null && mapKeys.containsKey("macAddress")) { errorMessage
+		 * = this.validationRoomData.validateMacAddressData(mapKeys.get("macAddress").
+		 * toString()); }
+		 */
 		
-		if (errorMessage == null && mapKeys.containsKey("GpsLa")) {
-			double gpsLa = Double.parseDouble(mapKeys.get("GpsLa").toString());
+		if (errorMessage == null && mapKeys.containsKey("gpsLa")) {
+			double gpsLa = Double.parseDouble(mapKeys.get("gpsLa").toString());
 			errorMessage = this.validationRoomData.validateGpsLatitude(gpsLa);
 		}
 		
-		if (errorMessage == null && mapKeys.containsKey("GpsLong")) {
-			double gpsLong = Double.parseDouble(mapKeys.get("GpsLong").toString());
+		if (errorMessage == null && mapKeys.containsKey("gpsLong")) {
+			double gpsLong = Double.parseDouble(mapKeys.get("gpsLong").toString());
 			errorMessage = this.validationRoomData.validateGPSLongitudeData(gpsLong);
 		}
 		
@@ -183,13 +185,13 @@ public class ValidationDataImpl1 implements ValidationData {
 	public String validateCourseData(Map<String, Object> mapKeys) {
 		String errorMessage = null;
 
-		if (mapKeys.containsKey("ID")) {
-			int id = Integer.parseInt(mapKeys.get("ID").toString());
+		if (mapKeys.containsKey("id")) {
+			int id = Integer.parseInt(mapKeys.get("id").toString());
 			errorMessage = this.validationCourseData.validateIdData(id);
 		}
 
-		if (errorMessage == null && mapKeys.containsKey("CourseName")) {
-			errorMessage = this.validationCourseData.validateCourseNameData(mapKeys.get("CourseName").toString());
+		if (errorMessage == null && mapKeys.containsKey("courseName")) {
+			errorMessage = this.validationCourseData.validateCourseNameData(mapKeys.get("courseName").toString());
 		}
 		
 		return errorMessage;

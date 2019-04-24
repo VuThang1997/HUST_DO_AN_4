@@ -12,7 +12,5 @@ public interface ValidationRoomData {
 	
 	String validateGPSLongitudeData(double gpsLong);
 	
-	String validateMacAddressData(String macAddr);
-	
-	
+	//String validateMacAddressData(String macAddr);
 }

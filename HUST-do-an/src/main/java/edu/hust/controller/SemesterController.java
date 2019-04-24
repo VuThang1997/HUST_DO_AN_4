@@ -17,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import edu.hust.model.ReportError;
 import edu.hust.model.Semester;
 import edu.hust.service.SemesterService;
 import edu.hust.utils.JsonMapUtil;
@@ -57,6 +58,7 @@ public class SemesterController {
 		String semesterName = null;
 		LocalDate beginDate = null;
 		LocalDate endDate = null;
+		ReportError report = null;
 
 		objectMapper = new ObjectMapper();
 		try {
@@ -64,35 +66,35 @@ public class SemesterController {
 			});
 
 			// check request body has enough info in right JSON format
-			if (!this.jsonMapUtil.checkKeysExist(jsonMap, "SemesterName", "BeginDate", "EndDate")) {
-				return ResponseEntity.badRequest()
-						.body("Error code: 01; Content: Json dynamic map lacks necessary key(s)!");
+			if (!this.jsonMapUtil.checkKeysExist(jsonMap, "semesterName", "beginDate", "endDate")) {
+				report = new ReportError(1, "Json dynamic map lacks necessary key(s)!");
+				return ResponseEntity.badRequest().body(report);
 			}
 
 			errorMessage = this.validationData.validateSemesterData(jsonMap);
 			if (errorMessage != null) {
-				return ResponseEntity.badRequest()
-						.body("Error code: 30; Content: Adding semester failed because " + errorMessage);
+				report = new ReportError(30, "Adding semester failed because " + errorMessage);
+				return ResponseEntity.badRequest().body(report);
 			}
 
-			semesterName = jsonMap.get("SemesterName").toString();
+			semesterName = jsonMap.get("semesterName").toString();
 			semester = this.semesterService.findSemesterByName(semesterName);
 			if (semester != null) {
-				return ResponseEntity.badRequest()
-						.body("Error code: 31; Content: This semester name has already been used!");
+				report = new ReportError(31, "This semester name has already been used!");
+				return ResponseEntity.badRequest().body(report);
 			}
 
 			// check if semester's time begin is duplicate
-			beginDate = LocalDate.parse(jsonMap.get("BeginDate").toString());
+			beginDate = LocalDate.parse(jsonMap.get("beginDate").toString());
 			if (!this.semesterService.checkSemesterTimeDuplicate(beginDate)) {
-				return ResponseEntity.badRequest()
-						.body("Error code: 32; Content: This semester's duration is in another semester");
+				report = new ReportError(32, "This semester's duration violate another semester's duration!");
+				return ResponseEntity.badRequest().body(report);
 			}
 
-			endDate = LocalDate.parse(jsonMap.get("EndDate").toString());
+			endDate = LocalDate.parse(jsonMap.get("endDate").toString());
 			if (!this.semesterService.checkSemesterTimeDuplicate(endDate)) {
-				return ResponseEntity.badRequest()
-						.body("Error code: 32; Content: This semester's duration is in another semester");
+				report = new ReportError(32, "This semester's duration violate another semester's duration!");
+				return ResponseEntity.badRequest().body(report);
 			}
 
 			semester = new Semester(semesterName, beginDate, endDate);
@@ -101,36 +103,48 @@ public class SemesterController {
 			return ResponseEntity.ok("Adding new semester successfully!");
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					"Error code: 03; Content: Json map get error when putting element(s) !");
+			report = new ReportError(2, "Error happened when jackson deserialization info!");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, report.toString());
 		}
 	}
 
 	@RequestMapping(value = "/semesters", method = RequestMethod.GET)
 	public ResponseEntity<?> getSemesterInfo(
-			@RequestParam(value = "SemesterName", required = true) String semesterName) {
+			@RequestParam(value = "semesterName", required = true) String semesterName) {
+		String errorMessage = this.validationSemesterData.validateSemesterNameData(semesterName);
+		ReportError report = null;
+		
+		if (errorMessage != null) {
+			report = new ReportError(37, "Getting semester info failed because " + errorMessage);
+			return ResponseEntity.badRequest().body(report);
+		}
+		
 		Semester semester = this.semesterService.findSemesterByName(semesterName);
 		if (semester == null) {
-			return ResponseEntity.badRequest().body("Error code: 33; Content: This semester do not exist!");
+			report = new ReportError(33, "This semester do not exist yet!");
+			return new ResponseEntity<>(report, HttpStatus.NOT_FOUND);
 		}
 		return ResponseEntity.ok(semester);
 	}
 
 	@RequestMapping(value = "/semesters", method = RequestMethod.DELETE)
 	public ResponseEntity<?> deleteSemester(
-			@RequestParam(value = "SemesterName", required = true) String semesterName) {
+			@RequestParam(value = "semesterName", required = true) String semesterName) {
 		String errorMessage = this.validationSemesterData.validateSemesterNameData(semesterName);
+		ReportError report = null;
 		if (errorMessage != null) {
-			return ResponseEntity.badRequest()
-					.body("Error code: 34; Content: Deleting semester failed because " + errorMessage);
+			report = new ReportError(36, "Deleting semester failed because " + errorMessage);
+			return ResponseEntity.badRequest().body(report);
 		}
 		
 		if (this.semesterService.findSemesterByName(semesterName) == null) {
-			return ResponseEntity.badRequest().body("Error code: 33; Content: This semester do not exist!");
+			report = new ReportError(33, "This semester do not exist yet!");
+			return new ResponseEntity<>(report, HttpStatus.NOT_FOUND);
 		}
 
 		if (!this.semesterService.checkSemesterDependant(semesterName)) {
-			return ResponseEntity.badRequest().body("Error code: 34; Content: This semester still has dependant!");
+			report = new ReportError(34, "This semester still has dependant!");
+			return ResponseEntity.badRequest().body(report);
 		}
 
 		this.semesterService.deleteSemester(semesterName);
@@ -147,6 +161,7 @@ public class SemesterController {
 		LocalDate beginDate = null;
 		LocalDate endDate = null;
 		int id = -1;
+		ReportError report = null;
 
 		objectMapper = new ObjectMapper();
 		try {
@@ -154,40 +169,42 @@ public class SemesterController {
 			});
 
 			// check request body has enough info in right JSON format
-			if (!this.jsonMapUtil.checkKeysExist(jsonMap, "ID", "SemesterName", "BeginDate", "EndDate")) {
-				return ResponseEntity.badRequest()
-						.body("Error code: 01; Content: Json dynamic map lacks necessary key(s)!");
+			if (!this.jsonMapUtil.checkKeysExist(jsonMap, "id", "semesterName", "beginDate", "endDate")) {
+				report = new ReportError(1, "Json dynamic map lacks necessary key(s)!");
+				return ResponseEntity.badRequest().body(report);
 			}
 
 			errorMessage = this.validationData.validateSemesterData(jsonMap);
 			if (errorMessage != null) {
-				return ResponseEntity.badRequest().body("Error code: 35; Content: Updating semester failed because " + errorMessage);
+				report = new ReportError(35, "Updating semester failed because " + errorMessage);
+				return ResponseEntity.badRequest().body(report);
 			}
 
-			semesterName = jsonMap.get("SemesterName").toString();
+			semesterName = jsonMap.get("semesterName").toString();
 			semester = this.semesterService.findSemesterByName(semesterName);
 			if (semester != null) {
-				return ResponseEntity.badRequest()
-						.body("Error code: 31; Content: This semester name has already been used!");
+				report = new ReportError(31, "This semester name has already been used!");
+				return ResponseEntity.badRequest().body(report);
 			}
 			
-			id = Integer.parseInt(jsonMap.get("ID").toString());
+			id = Integer.parseInt(jsonMap.get("id").toString());
 			semester = this.semesterService.findSemesterById(id);
 			if (semester == null) {
-				return ResponseEntity.badRequest().body("Error code: 33; Content: This semester do not exist!");
+				report = new ReportError(33, "This semester do not exist yet!");
+				return new ResponseEntity<>(report, HttpStatus.NOT_FOUND);
 			}
 
 			// check if semester's time begin is duplicate
-			beginDate = LocalDate.parse(jsonMap.get("BeginDate").toString());
+			beginDate = LocalDate.parse(jsonMap.get("beginDate").toString());
 			if (!this.semesterService.checkSemesterTimeDuplicate(beginDate)) {
-				return ResponseEntity.badRequest()
-						.body("Error code: 32; Content: This semester's duration is in another semester");
+				report = new ReportError(32, "This semester's duration violate another semester's duration!");
+				return ResponseEntity.badRequest().body(report);
 			}
 
-			endDate = LocalDate.parse(jsonMap.get("EndDate").toString());
+			endDate = LocalDate.parse(jsonMap.get("endDate").toString());
 			if (!this.semesterService.checkSemesterTimeDuplicate(endDate)) {
-				return ResponseEntity.badRequest()
-						.body("Error code: 32; Content: This semester's duration is in another semester");
+				report = new ReportError(32, "This semester's duration violate another semester's duration!");
+				return ResponseEntity.badRequest().body(report);
 			}
 
 			semester = new Semester(id, semesterName, beginDate, endDate);
@@ -195,8 +212,8 @@ public class SemesterController {
 			return ResponseEntity.ok("Updating new semester successfully!");
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					"Error code: 03; Content: Json map get error when putting element(s) !");
+			report = new ReportError(2, "Error happened when jackson deserialization info!");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, report.toString());
 		}
 	}
 }

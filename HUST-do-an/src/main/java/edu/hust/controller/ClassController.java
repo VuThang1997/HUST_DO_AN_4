@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.hust.model.Class;
 import edu.hust.model.Course;
+import edu.hust.model.ReportError;
 import edu.hust.model.Semester;
 import edu.hust.service.ClassService;
 import edu.hust.service.CourseService;
@@ -74,6 +75,7 @@ public class ClassController {
 		int numberOfLessons = -1;
 		int courseID = -1;
 		int semesterId = -1;
+		ReportError report = null;
 
 		try {
 			objectMapper = new ObjectMapper();
@@ -81,39 +83,41 @@ public class ClassController {
 			});
 
 			// check request body has enough info in right JSON format
-			if (!this.jsonMapUtil.checkKeysExist(jsonMap, "ClassName", "MaxStudent", "NumberOfLessons", "CourseID",
-					"SemesterID")) {
-				return ResponseEntity.badRequest()
-						.body("Error code: 01; Content: Json dynamic map lacks necessary key(s)!");
+			if (!this.jsonMapUtil.checkKeysExist(jsonMap, "className", "maxStudent", "numberOfLessons", "courseID",
+					"semesterID")) {
+				report = new ReportError(1, "Json dynamic map lacks necessary key(s)!");
+				return ResponseEntity.badRequest().body(report);
 			}
 
 			errorMessage = this.validationData.validateClassData(jsonMap);
 			if (errorMessage != null) {
-				return ResponseEntity.badRequest()
-						.body("Error code: 60; Content: Adding new class failed because " + errorMessage);
+				report = new ReportError(60, "Adding new class failed because " + errorMessage);
+				return ResponseEntity.badRequest().body(report);
 			}
 
-			courseID = Integer.parseUnsignedInt(jsonMap.get("CourseID").toString());
+			courseID = Integer.parseUnsignedInt(jsonMap.get("courseID").toString());
 			course = this.courseService.getCourseInfo(courseID);
 			if (course == null) {
-				return new ResponseEntity<>("Error code: 43; Content: This course do not exist!", HttpStatus.NOT_FOUND);
+				report = new ReportError(43, "This course do not exist!");
+				return new ResponseEntity<>(report, HttpStatus.NOT_FOUND);
 			}
 
-			semesterId = Integer.parseUnsignedInt(jsonMap.get("SemesterID").toString());
+			semesterId = Integer.parseUnsignedInt(jsonMap.get("semesterID").toString());
 			semester = this.semesterService.findSemesterById(semesterId);
 			if (semester == null) {
-				return ResponseEntity.badRequest().body("Error code: 33; Content: This semester do not exist!");
+				report = new ReportError(33, "This semester do not exist!");
+				return new ResponseEntity<>(report, HttpStatus.NOT_FOUND);
 			}
 
 			addingDate = LocalDate.now();
-			if (addingDate.isAfter(semester.getBeginDate())) {
-				return ResponseEntity.badRequest()
-						.body("Error code: 61; Content: Adding new class do not work after semester begins!");
+			if (addingDate.isAfter(semester.getBeginDate().plusDays(14))) {
+				report = new ReportError(61, "Adding new class do not work after semester begins 2 weeks " + errorMessage);
+				return ResponseEntity.badRequest().body(report);
 			}
 
-			numberOfLessons = Integer.parseUnsignedInt(jsonMap.get("NumberOfLessons").toString());
-			maxStudent = Integer.parseUnsignedInt(jsonMap.get("MaxStudent").toString());
-			className = jsonMap.get("ClassName").toString();
+			numberOfLessons = Integer.parseUnsignedInt(jsonMap.get("numberOfLessons").toString());
+			maxStudent = Integer.parseUnsignedInt(jsonMap.get("maxStudent").toString());
+			className = jsonMap.get("className").toString();
 			
 
 			classInstance = new Class(className, maxStudent, numberOfLessons);
@@ -128,21 +132,24 @@ public class ClassController {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					"Error code: 02; Content: Error happened when jackson deserialization info !");
+			report = new ReportError(2, "Error happened when jackson deserialization info!");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, report.toString());
 		}
 	}
 
 	@RequestMapping(value = "/classes", method = RequestMethod.GET)
 	public ResponseEntity<?> getInfoClass(@RequestParam(value = "classID", required = true) int classID) {
 		String errorMessage = this.validationClassData.validateIdData(classID);
+		ReportError report = null;
 		if (errorMessage != null) {
-			return ResponseEntity.badRequest().body("Error code: 62; Content: Getting class info failed because " + errorMessage);
+			report = new ReportError(62, "Getting class info failed because " + errorMessage);
+			return ResponseEntity.badRequest().body(report);
 		}
 
 		Class classInstance = this.classService.findClassByID(classID);
 		if (classInstance != null) {
-			return new ResponseEntity<>("Error code: 63; Content: This class do not exist!", HttpStatus.NOT_FOUND);
+			report = new ReportError(63, "This class do not exist!");
+			return new ResponseEntity<>(report, HttpStatus.NOT_FOUND);
 		}
 
 		return ResponseEntity.ok(classInstance);
@@ -151,20 +158,24 @@ public class ClassController {
 	@DeleteMapping("/classes")
 	public ResponseEntity<?> deleteInfoClass(@RequestParam(value = "classID", required = true) int classID) {
 		String errorMessage = this.validationClassData.validateIdData(classID);
+		ReportError report = null;
 		if (errorMessage != null) {
-			return ResponseEntity.badRequest().body("Error code: 62; Content: Getting class info failed because " + errorMessage);
+			report = new ReportError(62, "Getting class info failed because " + errorMessage);
+			return ResponseEntity.badRequest().body(report);
 		}
 		
 		Class classInstance = this.classService.findClassByID(classID);
 		if (classInstance == null) {
-			return new ResponseEntity<>("Error code: 63; Content: This class do not exist!", HttpStatus.NOT_FOUND);
+			report = new ReportError(63, "This class do not exist!");
+			return new ResponseEntity<>(report, HttpStatus.NOT_FOUND);
 		}
 		
 		if (this.classService.deleteClassInfo(classID)) {
 			return ResponseEntity.ok("Deleting class successes!");
 		}
 		
-		return ResponseEntity.badRequest().body("Error code: 66; Content: This class still has dependant!");
+		report = new ReportError(66, "This class still has dependant! ");
+		return ResponseEntity.badRequest().body(report);
 	}
 
 	@PutMapping("/classes")
@@ -181,6 +192,7 @@ public class ClassController {
 		int numberOfLessons = -1;
 		int courseID = -1;
 		int semesterId = -1;
+		ReportError report = null;
 
 		try {
 			objectMapper = new ObjectMapper();
@@ -188,53 +200,56 @@ public class ClassController {
 			});
 
 			// check request body has enough info in right JSON format
-			if (!this.jsonMapUtil.checkKeysExist(jsonMap, "ID", "ClassName", "MaxStudent", "NumberOfLessons",
-					"CourseID", "SemesterID")) {
-				return ResponseEntity.badRequest()
-						.body("Error code: 01; Content: Json dynamic map lacks necessary key(s)!");
+			if (!this.jsonMapUtil.checkKeysExist(jsonMap, "id", "className", "maxStudent", "numberOfLessons",
+					"courseID", "semesterID")) {
+				report = new ReportError(1, "Json dynamic map lacks necessary key(s)!");
+				return ResponseEntity.badRequest().body(report);
 			}
 
 			errorMessage = this.validationData.validateClassData(jsonMap);
 			if (errorMessage != null) {
-				return ResponseEntity.badRequest()
-						.body("Error code: 64; Content: Updating class info failed because " + errorMessage);
+				report = new ReportError(64, "Updating class info failed because " + errorMessage);
+				return ResponseEntity.badRequest().body(report);
 			}
 
-			id = Integer.parseUnsignedInt(jsonMap.get("ID").toString());
+			id = Integer.parseUnsignedInt(jsonMap.get("id").toString());
 			classInstance = this.classService.findClassByID(id);
 			if (classInstance == null) {
-				return new ResponseEntity<>("Error code: 63; Content: This class do not exist!", HttpStatus.NOT_FOUND);
+				report = new ReportError(63, "This class do not exist!");
+				return new ResponseEntity<>(report, HttpStatus.NOT_FOUND);
 			}
 
-			courseID = Integer.parseUnsignedInt(jsonMap.get("CourseID").toString());
+			courseID = Integer.parseUnsignedInt(jsonMap.get("courseID").toString());
 			if (classInstance.getCourse().getCourseID() != courseID) {
 				course = this.courseService.getCourseInfo(courseID);
 				if (course == null) {
-					return new ResponseEntity<>("Error code: 43; Content: This course do not exist!",
-							HttpStatus.NOT_FOUND);
+					report = new ReportError(43, "This course do not exist!");
+					return new ResponseEntity<>(report, HttpStatus.NOT_FOUND);
 				}
 			} else {
 				course = classInstance.getCourse();
 			}
 
-			semesterId = Integer.parseUnsignedInt(jsonMap.get("SemesterID").toString());
+			semesterId = Integer.parseUnsignedInt(jsonMap.get("semesterID").toString());
 			if (classInstance.getSemester().getSemesterID() != semesterId) {
 				semester = this.semesterService.findSemesterById(semesterId);
 				if (semester == null) {
-					return ResponseEntity.badRequest().body("Error code: 33; Content: This semester do not exist!");
+					report = new ReportError(33, "This semester do not exist!");
+					return new ResponseEntity<>(report, HttpStatus.NOT_FOUND);
 				}
 			} else {
 				semester = classInstance.getSemester();
 			}
 			
 			LocalDate updateDate = LocalDate.now();
-			if (updateDate.isAfter(semester.getBeginDate())) {
-				return ResponseEntity.badRequest().body("Error code: 65; Content: Updating class info do not work after semester begins!");
+			if (updateDate.isAfter(semester.getBeginDate().plusDays(14))) {
+				report = new ReportError(65, "Updating class info do not work after semester begins 2 weeks! ");
+				return ResponseEntity.badRequest().body(report);
 			}
 
-			numberOfLessons = Integer.parseUnsignedInt(jsonMap.get("NumberOfLessons").toString());
-			maxStudent = Integer.parseUnsignedInt(jsonMap.get("MaxStudent").toString());
-			className = jsonMap.get("ClassName").toString();
+			numberOfLessons = Integer.parseUnsignedInt(jsonMap.get("numberOfLessons").toString());
+			maxStudent = Integer.parseUnsignedInt(jsonMap.get("maxStudent").toString());
+			className = jsonMap.get("className").toString();
 
 			classInstance = new Class(className, maxStudent, numberOfLessons);
 			classInstance.setCourse(course);
@@ -245,8 +260,8 @@ public class ClassController {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					"Error code: 02; Content: Error happened when jackson deserialization info !");
+			report = new ReportError(2, "Error happened when jackson deserialization info!");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, report.toString());
 		}
 	}
 }

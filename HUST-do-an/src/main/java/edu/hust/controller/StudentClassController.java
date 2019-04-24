@@ -17,7 +17,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.hust.service.RoomService;
 import edu.hust.service.StudentClassService;
-import edu.hust.utils.GeneralValue;
 import edu.hust.utils.JsonMapUtil;
 
 @RestController
@@ -78,9 +77,7 @@ public class StudentClassController {
 			// check other info
 			gpsLong = Double.parseDouble(jsonMap.get("GpsLong").toString());
 			gpsLa = Double.parseDouble(jsonMap.get("GpsLa").toString());
-			if (gpsLong < GeneralValue.minLongitude || gpsLong > GeneralValue.maxLongitude
-					|| gpsLa < GeneralValue.minLatitude || gpsLa > GeneralValue.maxLatitude) {
-
+			if (gpsLong < -180 || gpsLong > 180 || gpsLa < -90 || gpsLa > 90) {
 				return ResponseEntity.badRequest().body("Some info are not practical!");
 			}
 

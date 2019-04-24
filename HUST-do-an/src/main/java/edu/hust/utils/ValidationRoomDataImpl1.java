@@ -47,13 +47,10 @@ public class ValidationRoomDataImpl1 implements ValidationRoomData{
 		return null;
 	}
 
-	@Override
-	public String validateMacAddressData(String macAddr) {
-		String regex = "[0-9][0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9]";
-		if (!macAddr.matches(regex)) {
-			return "MAC address is in wrong format";
-		}
-		return null;
-	}
+	/*
+	 * @Override public String validateMacAddressData(String macAddr) { String regex
+	 * = "[0-9][0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9]"; if (!macAddr.matches(regex))
+	 * { return "MAC address is in wrong format"; } return null; }
+	 */
 
 }
