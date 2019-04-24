@@ -114,6 +114,7 @@ public class ClassController {
 			numberOfLessons = Integer.parseUnsignedInt(jsonMap.get("NumberOfLessons").toString());
 			maxStudent = Integer.parseUnsignedInt(jsonMap.get("MaxStudent").toString());
 			className = jsonMap.get("ClassName").toString();
+			
 
 			classInstance = new Class(className, maxStudent, numberOfLessons);
 			classInstance.setCurrentLesson(0);
@@ -163,7 +164,7 @@ public class ClassController {
 			return ResponseEntity.ok("Deleting class successes!");
 		}
 		
-		return ResponseEntity.badRequest().body("Error code: 56; Content: This class still has dependant!");
+		return ResponseEntity.badRequest().body("Error code: 66; Content: This class still has dependant!");
 	}
 
 	@PutMapping("/classes")
