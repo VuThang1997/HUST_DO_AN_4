@@ -10,4 +10,6 @@ public interface StudentClassRepository extends JpaRepository<StudentClass, Inte
 
 	
 
+	
+
 }

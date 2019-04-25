@@ -17,4 +17,7 @@ public interface CustomStudentClassRepository {
 	
 	@Query("SELECT sc FROM StudentClass sc WHERE sc.classInstance.id = ?1")
 	List<StudentClass> getListStudentClass(int id);
+	
+	@Query("SELECT sc FROM StudentClass sc WHERE sc.classInstance.id = ?1 AND sc.isLearning = ?2")
+	List<StudentClass> getListCurrentStudentClass(int id, int value);
 }

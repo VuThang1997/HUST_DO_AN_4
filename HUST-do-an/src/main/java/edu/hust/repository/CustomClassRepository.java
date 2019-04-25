@@ -5,7 +5,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface CustomClassRepository {
 	@Modifying
-	void setNullIdentifyString(@Param("classID") int id, @Param("eventName") String eventName);
+	void setNullIdentifyString(@Param("classID") int id, @Param("eventName") String eventName, int classRoomID);
 	
 	@Modifying
 	void setIsCheckFalse(int classID, String finishTime, String eventDynamicName);

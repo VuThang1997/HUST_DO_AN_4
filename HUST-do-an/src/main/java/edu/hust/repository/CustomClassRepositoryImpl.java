@@ -18,13 +18,15 @@ public class CustomClassRepositoryImpl implements CustomClassRepository {
 	}
 
 	@Override
-	public void setNullIdentifyString(int id, String eventName) {
+	public void setNullIdentifyString(int id, String eventName, int classRoomID) {
 		String sql = " CREATE EVENT IF NOT EXISTS " + eventName
-				+ "   ON SCHEDULE AT NOW() + INTERVAL 10 MINUTE "
+				+ "   ON SCHEDULE AT NOW() + INTERVAL 3 MINUTE "
 				+ "   DO "
-				+ "    UPDATE class "
-				+ "    SET IdentifyString = NULL "
-				+ "    WHERE class.ID = " + id;
+				+ "		BEGIN"
+				+ "   		UPDATE class "
+				+ "    		SET class.IdentifyString = NULL "
+				+ "    		WHERE class.ID = " + id + ";"
+				+ "	    END;";
 		Query query = entityManager.createNativeQuery(sql);
 		query.executeUpdate();
 		return;

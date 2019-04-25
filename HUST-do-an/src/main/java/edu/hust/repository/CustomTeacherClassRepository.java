@@ -17,4 +17,7 @@ public interface CustomTeacherClassRepository {
 	
 	@Query("SELECT tc FROM TeacherClass tc WHERE tc.classInstance.id = ?1")
 	List<TeacherClass> getListTeacherClass(int id);
+	
+	@Query("SELECT tc FROM TeacherClass tc WHERE tc.classInstance.id = ?1 AND tc.isTeaching = ?2")
+	Optional<TeacherClass> findByClassIDAndStatus(int classID, int value);
 }

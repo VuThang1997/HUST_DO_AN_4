@@ -22,4 +22,13 @@ public class GeneralValue {
 	
 	public static final int minStudents = 15;			//unit: person
 	public static final int maxStudents = 100;			//unit: person
+	
+	public static final int maxClassPerTeacher = 5;		//unit: class
+	
+	public static final String regexForSplitListRollCall = ";";
+	public static final String regexForSplitDate = "-";
+	
+	public static final String markForMissingRollCall = "x";
+	public static final String markForTeacherMissing = "i";
+	public static final String markForPermission = "y";
 }

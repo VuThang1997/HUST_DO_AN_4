@@ -6,7 +6,7 @@ public interface ValidationClassRoomData {
 
 	String validateIdData(int id);
 	
-	//String validateBeginDate(LocalDate beginAt);
+	String validateBeginDate(LocalTime beginAt);
 	
 	String validateFinishDate(LocalTime finishAt, LocalTime beginAt);
 	

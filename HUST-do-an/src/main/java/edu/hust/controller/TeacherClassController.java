@@ -19,6 +19,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.hust.model.ReportError;
+import edu.hust.service.RoomService;
 import edu.hust.service.TeacherClassService;
 import edu.hust.utils.JsonMapUtil;
 import edu.hust.utils.ValidationData;
@@ -27,12 +28,13 @@ import edu.hust.utils.ValidationTeacherClassData;
 
 @RestController
 public class TeacherClassController {
-	
+
 	private TeacherClassService teacherClassService;
 	private ValidationData validationData;
 	private ValidationTeacherClassData validationTeacherClassData;
 	private ValidationRoomData validationRoomData;
 	private JsonMapUtil jsonMapUtil;
+	private RoomService roomService;
 
 	public TeacherClassController() {
 		super();
@@ -40,19 +42,20 @@ public class TeacherClassController {
 	}
 
 	@Autowired
-	public TeacherClassController(
-			@Qualifier("TeacherClassServiceImpl1") TeacherClassService teacherClassService,
-			@Qualifier("ValidationDataImpl1") ValidationData validationData, 
+	public TeacherClassController(@Qualifier("TeacherClassServiceImpl1") TeacherClassService teacherClassService,
+			@Qualifier("ValidationDataImpl1") ValidationData validationData,
 			@Qualifier("JsonMapUtilImpl1") JsonMapUtil jsonMapUtil,
 			@Qualifier("ValidationTeacherClassDataImpl1") ValidationTeacherClassData validationTeacherClassData,
-			@Qualifier("ValidationRoomDataImpl1") ValidationRoomData validationRoomData) {
+			@Qualifier("ValidationRoomDataImpl1") ValidationRoomData validationRoomData,
+			@Qualifier("RoomServiceImpl1") RoomService roomService) {
 		super();
 		this.teacherClassService = teacherClassService;
+		this.roomService = roomService;
 		this.validationData = validationData;
 		this.validationRoomData = validationRoomData;
 		this.validationTeacherClassData = validationTeacherClassData;
 		this.jsonMapUtil = jsonMapUtil;
-		
+
 	}
 
 	@PostMapping(value = "/teacherRollCall")
@@ -61,6 +64,8 @@ public class TeacherClassController {
 		int classID = 0;
 		int roomID = 0;
 		int weekday = 0;
+		double gpsLong;
+		double gpsLa;
 		String inputMd5 = null;
 		String result = null;
 		String errorMessage = null;
@@ -69,31 +74,32 @@ public class TeacherClassController {
 		ObjectMapper objectMapper = null;
 		Map<String, Object> jsonMap = null;
 		ReportError report = null;
-		
+
 		try {
 			objectMapper = new ObjectMapper();
-			jsonMap = objectMapper.readValue(info, new TypeReference<Map<String, Object>>() {});
+			jsonMap = objectMapper.readValue(info, new TypeReference<Map<String, Object>>() {
+			});
 
-			//check request body has enough info in right JSON format
-			if (!this.jsonMapUtil.checkKeysExist(jsonMap, "teacherID", "classID", "roomID")) {
+			// check request body has enough info in right JSON format
+			if (!this.jsonMapUtil.checkKeysExist(jsonMap, "teacherID", "classID", "roomID", "gpsLong", "gpsLa")) {
 				report = new ReportError(1, "Json dynamic map lacks necessary key(s)!");
 				return ResponseEntity.badRequest().body(report);
 			}
-			
+
 			teacherID = Integer.parseInt(jsonMap.get("teacherID").toString());
 			errorMessage = this.validationTeacherClassData.validateIdData(teacherID);
 			if (errorMessage != null) {
 				report = new ReportError(80, "Teacher roll call failed because " + errorMessage);
 				return ResponseEntity.badRequest().body(report);
 			}
-			
+
 			classID = Integer.parseInt(jsonMap.get("classID").toString());
 			errorMessage = this.validationTeacherClassData.validateIdData(classID);
 			if (errorMessage != null) {
 				report = new ReportError(80, "Teacher roll call failed because " + errorMessage);
 				return ResponseEntity.badRequest().body(report);
 			}
-			
+
 			roomID = Integer.parseInt(jsonMap.get("roomID").toString());
 			errorMessage = this.validationRoomData.validateIdData(roomID);
 			if (errorMessage != null) {
@@ -101,33 +107,46 @@ public class TeacherClassController {
 				return ResponseEntity.badRequest().body(report);
 			}
 
-			//check teacher has authority to roll call this class
+			gpsLong = Double.parseDouble(jsonMap.get("gpsLong").toString());
+			gpsLa = Double.parseDouble(jsonMap.get("gpsLa").toString());
+			if (gpsLong < -180 || gpsLong > 180 || gpsLa < -90 || gpsLa > 90) {
+				report = new ReportError(84, "Longitude/Latitude is out of practical range!");
+				return ResponseEntity.badRequest().body(report);
+			}
+
+			// check teacher has authority to roll call this class
 			if (!this.teacherClassService.checkTeacherHasAuthority(teacherID, classID)) {
 				report = new ReportError(11, "Authentication has failed or has not yet been provided!");
 				return new ResponseEntity<>(report, HttpStatus.UNAUTHORIZED);
 			}
 
-			//Check teacher generate time in valid limit
-			//Notice: weekday of java = weekday of mySQL - 1
+			// check if device is in distance limit - 50m
+			if (this.roomService.calculateDistanceBetween2GPSCoord(roomID, gpsLong, gpsLa) > 50) {
+				report = new ReportError(85, "Device is out of valid distance to classroom!");
+				return ResponseEntity.badRequest().body(report);
+			}
+
+			// Check teacher generate time in valid limit
+			// Notice: weekday of java = weekday of mySQL - 1
 			generateTime = LocalTime.now();
 			weekday = LocalDate.now().getDayOfWeek().getValue() + 1;
 			if (!this.teacherClassService.checkGenerateTimeValid(weekday, generateTime, classID, roomID)) {
 				report = new ReportError(81, "Teacher roll call failed because timing is not in valid range!");
 				return ResponseEntity.badRequest().body(report);
 			}
-			
-			//generate md5 code
+
+			// generate md5 code
 			inputMd5 = generateTime.toString() + classID + generateTime.getMinute() + (new Random()).nextInt(1000);
 			result = this.teacherClassService.generateIdentifyString(classID, roomID, weekday, inputMd5);
 			if (result == null) {
 				report = new ReportError(82, "Cannot generate identify string!");
 				return ResponseEntity.badRequest().body(report);
 			}
-			
-			//add generate time and date to teacher's listRollCall
+
+			// add generate time and date to teacher's listRollCall
 			rollCallAt = LocalDateTime.now();
 			this.teacherClassService.rollCall(rollCallAt, teacherID, classID);
-			
+
 			report = new ReportError(200, result);
 			return ResponseEntity.ok(report);
 

@@ -21,4 +21,6 @@ public interface ClassRoomRepository extends JpaRepository<ClassRoom, Integer>, 
 			+ " OR (?4 BETWEEN cr.beginAt AND cr.finishAt))")
 	List<ClassRoom> findRoomByIdAndWeekdayAndDuration(int roomID, int weekday, LocalTime beginAt, LocalTime finishAt);
 
+	List<ClassRoom> findByWeekday(int weekday);
+
 }

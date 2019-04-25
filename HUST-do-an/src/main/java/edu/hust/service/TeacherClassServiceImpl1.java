@@ -21,6 +21,7 @@ import edu.hust.model.TeacherClass;
 import edu.hust.repository.ClassRepository;
 import edu.hust.repository.ClassRoomRepository;
 import edu.hust.repository.TeacherClassRepository;
+import edu.hust.utils.GeneralValue;
 
 @Service
 @Transactional
@@ -51,16 +52,15 @@ public class TeacherClassServiceImpl1 implements TeacherClassService {
 	@Override
 	public List<ClassRoom> getTimeTable(int teacherID, int semesterID) {
 		List<Integer> listClassID = this.teacherClassRepository.getListClass(teacherID, semesterID);
-
 		if (listClassID == null || listClassID.isEmpty()) {
 			return null;
 		}
 
 		List<ClassRoom> listClassRoom = this.classRoomRepository.getListClassRoom(listClassID);
-
 		if (listClassRoom == null || listClassRoom.isEmpty()) {
 			return null;
 		}
+
 		return listClassRoom;
 	}
 
@@ -92,25 +92,21 @@ public class TeacherClassServiceImpl1 implements TeacherClassService {
 		beginTime = classRoom.getBeginAt();
 		finishTime = classRoom.getFinishAt();
 		isChecked = classRoom.getClassInstance().getIsChecked();
-		
+
 		// 1 lesson has only one roll call request
 		// check if this class has been request to roll call
-		
 		if (isChecked != null) {
 			String[] dateAndTime = isChecked.split("-");
 			int year = Integer.parseInt(dateAndTime[0]);
 			int dayOfYear = Integer.parseInt(dateAndTime[1]);
 			int secondOfDay = Integer.parseInt(dateAndTime[2]);
-			
+
 			LocalDate checkedDate = LocalDate.ofYearDay(year, dayOfYear);
 			LocalTime checkedTime = LocalTime.ofSecondOfDay(secondOfDay);
-			System.out.println("\n\ncheckedDate = " + checkedDate.toString());
-			System.out.println("\n\ncheckedTime = " + checkedTime.toString());
-			
-			//check if a day has more than one lesson of a class
+
+			// check if a day has more than one lesson of a class
 			if (LocalDate.now().isEqual(checkedDate) && checkedTime.isAfter(classRoom.getBeginAt())
 					&& checkedTime.isBefore(classRoom.getFinishAt())) {
-				System.out.println("\n\nMile 3");
 				return false;
 			}
 		}
@@ -133,7 +129,7 @@ public class TeacherClassServiceImpl1 implements TeacherClassService {
 		byte[] messageDigest;
 		String identifyString = null;
 		String eventDynamicName = null;
-		//String timeString = null;
+		// String timeString = null;
 
 		// check if this classroom exists
 		if (classRoom == null) {
@@ -153,7 +149,7 @@ public class TeacherClassServiceImpl1 implements TeacherClassService {
 			messageDigest = md.digest(inputMd5.getBytes());
 			identifyString = messageDigest.toString().substring(0, 10);
 			classInstance.setIdentifyString(identifyString);
-			
+
 			String isChecked = null;
 			LocalDateTime rollCallAt = LocalDateTime.now();
 			isChecked = rollCallAt.getYear() + "-" + rollCallAt.getDayOfYear() + "-"
@@ -165,7 +161,7 @@ public class TeacherClassServiceImpl1 implements TeacherClassService {
 			// user Class.numberOfEvents to avoid conflict
 			Class.numberOfEvents += 1;
 			eventDynamicName = "generateIdentifyString" + Class.numberOfEvents;
-			this.classRepository.setNullIdentifyString(classID, eventDynamicName);
+			this.classRepository.setNullIdentifyString(classID, eventDynamicName, classRoom.getId());
 
 			// this.classRepository.setIsCheckFalse(classID, timeString, eventDynamicName);
 			return identifyString;
@@ -195,7 +191,7 @@ public class TeacherClassServiceImpl1 implements TeacherClassService {
 
 		newValue = "" + rollCallAt.getYear();
 		newValue += "-" + rollCallAt.getDayOfYear();
-		newValue += "-" + rollCallAt.toLocalTime().toSecondOfDay() + ";";
+		newValue += "-" + rollCallAt.toLocalTime().toSecondOfDay() + GeneralValue.regexForSplitListRollCall;
 
 		if (listRollCall == null) {
 			listRollCall = newValue;
@@ -220,6 +216,22 @@ public class TeacherClassServiceImpl1 implements TeacherClassService {
 			return null;
 		}
 		return listInstance;
+	}
+
+	@Override
+	public TeacherClass findCurrentTeacherByClassID(int classID) {
+		Optional<TeacherClass> teacherClass = this.teacherClassRepository.findByClassIDAndStatus(classID,
+				IsTeaching.TEACHING.getValue());
+		if (teacherClass.isEmpty()) {
+			return null;
+		}
+		return teacherClass.get();
+	}
+
+	@Override
+	public boolean updateTeacherClass(TeacherClass teacherClass) {
+		this.teacherClassRepository.save(teacherClass);
+		return false;
 	}
 
 }

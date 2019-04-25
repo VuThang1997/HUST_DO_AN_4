@@ -1,13 +1,12 @@
 package edu.hust.service;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 import edu.hust.model.Semester;
 
 public interface SemesterService {
 	
-	int getSemesterIDByDate(Date date);
+	int getSemesterIDByDate(LocalDate currentDate);
 
 	Semester findSemesterByName(String semesterName);
 

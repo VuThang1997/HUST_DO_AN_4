@@ -33,5 +33,20 @@ public interface TeacherClassService {
 	
 	boolean rollCall(LocalDateTime rollCallAt, int teacherID, int classID);
 
+	/**
+	 * Find all teacher has involved the class, regardless status
+	 * @param id
+	 * @return a list of TeacherClass if records are found; null if none exists
+	 */
 	List<TeacherClass> findByClassID(int id);
+
+	
+	/**
+	 * Find teacher who is teaching the class
+	 * @param classID
+	 * @return an instance of TeacherClass if record is found; null if none exists
+	 */
+	TeacherClass findCurrentTeacherByClassID(int classID);
+	
+	boolean updateTeacherClass(TeacherClass teacherClass);
 }

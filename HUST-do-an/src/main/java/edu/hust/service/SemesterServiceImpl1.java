@@ -1,7 +1,6 @@
 package edu.hust.service;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import edu.hust.model.Semester;
 import edu.hust.model.Class;
+import edu.hust.model.Semester;
 import edu.hust.repository.ClassRepository;
 import edu.hust.repository.SemesterRepository;
 
@@ -34,10 +33,10 @@ public class SemesterServiceImpl1 implements SemesterService {
 	}
 	
 	@Override
-	public int getSemesterIDByDate(Date date) {
-		Optional<Integer> semesterID = this.semesterRepository.getSemesterIDByTime(date);
-		if (semesterID.isPresent()) {
-			return semesterID.get().intValue();
+	public int getSemesterIDByDate(LocalDate currentDate) {
+		Optional<Semester> semester = this.semesterRepository.getSemesterIDByTime(currentDate);
+		if (semester.isPresent()) {
+			return semester.get().getSemesterID();
 		}
 		return -1;
 	}

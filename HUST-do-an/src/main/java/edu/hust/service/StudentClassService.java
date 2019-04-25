@@ -32,4 +32,8 @@ public interface StudentClassService {
 	boolean rollCall(int classID, int studentID, LocalDateTime rollCallAt);
 
 	List<StudentClass> findByClassID(int id);
+	
+	boolean updateStudentClassInfo(StudentClass studentClass);
+
+	List<StudentClass> findCurrentStudentsByClassID(int id);
 }

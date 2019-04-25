@@ -15,6 +15,7 @@ import edu.hust.model.ClassRoom;
 import edu.hust.model.StudentClass;
 import edu.hust.repository.ClassRoomRepository;
 import edu.hust.repository.StudentClassRepository;
+import edu.hust.utils.GeneralValue;
 
 @Service
 @Qualifier("StudentClassServiceImpl1")
@@ -47,7 +48,6 @@ public class StudentClassServiceImpl1 implements StudentClassService {
 		}
 
 		List<ClassRoom> listClassRoom = this.classRoomRepository.getListClassRoom(listClassID);
-
 		if (listClassRoom == null || listClassRoom.isEmpty()) {
 			return null;
 		}
@@ -124,7 +124,7 @@ public class StudentClassServiceImpl1 implements StudentClassService {
 
 		newValue = "" + rollCallAt.getYear();
 		newValue += "-" + rollCallAt.getDayOfYear();
-		newValue += "-" + rollCallAt.toLocalTime().toSecondOfDay() + ";";
+		newValue += "-" + rollCallAt.toLocalTime().toSecondOfDay() + GeneralValue.regexForSplitListRollCall;
 
 		if (listRollCall == null) {
 			listRollCall = newValue;
@@ -152,4 +152,21 @@ public class StudentClassServiceImpl1 implements StudentClassService {
 		}
 		return listInstance;
 	}
+
+	@Override
+	public boolean updateStudentClassInfo(StudentClass studentClass) {
+		this.studentClassRepository.save(studentClass);
+		return true;
+	}
+
+	@Override
+	public List<StudentClass> findCurrentStudentsByClassID(int classID) {
+		List<StudentClass> listInstance = this.studentClassRepository.getListCurrentStudentClass(classID, IsLearning.LEARNING.getValue());
+		if (listInstance == null || listInstance.isEmpty()) {
+			return null;
+		}
+		return listInstance;
+	}
+	
+	
 }

@@ -24,5 +24,7 @@ public interface ClassRoomService {
 	void updateClassRoomInfo(ClassRoom classRoom);
 
 	boolean deleteClassRoom(ClassRoom classRoom);
+
+	List<ClassRoom> findClassRoomByWeekday(int currentDay);
 	
 }

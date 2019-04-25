@@ -259,11 +259,14 @@ public class ValidationDataImpl1 implements ValidationData {
 			errorMessage = this.validationClassRoomData.validateWeekday(tmpNumber);
 		}
 
-		if (errorMessage == null && mapKeys.containsKey("beginAt")) {
+		if (errorMessage == null && mapKeys.containsKey("beginAt") && mapKeys.containsKey("finishAt")) {
 			LocalTime beginAt = LocalTime.parse(mapKeys.get("beginAt").toString());
-			LocalTime finishAt = LocalTime.parse(mapKeys.get("finishAt").toString());
+			errorMessage = this.validationClassRoomData.validateBeginDate(beginAt);
 			
-			errorMessage = this.validationClassRoomData.validateFinishDate(finishAt, beginAt);
+			if (errorMessage == null) {
+				LocalTime finishAt = LocalTime.parse(mapKeys.get("finishAt").toString());
+				errorMessage = this.validationClassRoomData.validateFinishDate(finishAt, beginAt);
+			}
 		}
 		
 		return errorMessage;

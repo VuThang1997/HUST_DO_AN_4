@@ -13,7 +13,6 @@ import edu.hust.model.ClassRoom;
 import edu.hust.repository.ClassRoomRepository;
 
 @Service
-
 @Qualifier("ClassRoomServiceImpl1")
 public class ClassRoomServiceImpl1 implements ClassRoomService {
 
@@ -104,6 +103,15 @@ public class ClassRoomServiceImpl1 implements ClassRoomService {
 			return false;
 		}
 		
+	}
+
+	@Override
+	public List<ClassRoom> findClassRoomByWeekday(int currentDay) {
+		List<ClassRoom> listClassRoom = this.classRoomRepository.findByWeekday(currentDay);
+		if (listClassRoom == null || listClassRoom.isEmpty()) {
+			return null;
+		}
+		return listClassRoom;
 	}
 
 }
