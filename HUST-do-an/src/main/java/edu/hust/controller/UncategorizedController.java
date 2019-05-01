@@ -360,40 +360,52 @@ public class UncategorizedController {
 
 					for (int i = 0; i < rollCallList.length; i++) {
 						if (rollCallList[i].contains(GeneralValue.markForMissingRollCall)
-								|| rollCallList[i].contains(GeneralValue.markForTeacherMissing)
-								|| rollCallList[i].contains(GeneralValue.markForPermission)) {
+								|| rollCallList[i].contains(GeneralValue.markForTeacherMissing)) {
 							rollCallString += rollCallList[i] + GeneralValue.regexForSplitListRollCall;
 							continue;
 						}
 
-						// max second of a day is 86400 = 5 number; at 7am second = 25200 = 5 number
-						tmpString = rollCallList[i].substring(rollCallList[i].length() - 5);
-						tmpTime = LocalTime.ofSecondOfDay(Integer.parseInt(tmpString));
+						else {
+							if (rollCallList[i].contains(GeneralValue.markForPermission)
+									|| rollCallList[i].contains(GeneralValue.markForNotBringPhone)) {
+								// max second of a day is 86400 = 5 number; at 7am second = 25200 = 5 number
+								// however, this string contains a special mark => Both beginIndex and EndIndex
+								// plus 1
+								tmpString = rollCallList[i].substring(rollCallList[i].length() - 6,
+										rollCallList[i].length() - 1);
 
-						// this lesson was roll called
-						if (tmpTime.isAfter(instanceClassRoom.getBeginAt())
-								&& tmpTime.isBefore(instanceClassRoom.getFinishAt())) {
-							rollCallString = null;
-							flag = true;
-							break;
-						}
-
-						// this lessons is missing roll call
-						else if (tmpTime.isAfter(instanceClassRoom.getFinishAt())) {
-							if (isTeacheRollCalled == false) {
-								rollCallString = rollCallString.concat(message2);
 							} else {
-								rollCallString = rollCallString.concat(message1);
+								// max second of a day is 86400 = 5 number; at 7am second = 25200 = 5 number
+								tmpString = rollCallList[i].substring(rollCallList[i].length() - 5);
 							}
 
-							for (; i < rollCallList.length; i++) {
+							tmpTime = LocalTime.ofSecondOfDay(Integer.parseInt(tmpString));
+
+							// this lesson was roll called
+							if (tmpTime.isAfter(instanceClassRoom.getBeginAt())
+									&& tmpTime.isBefore(instanceClassRoom.getFinishAt())) {
+								rollCallString = null;
+								flag = true;
+								break;
+							}
+
+							// this lessons is missing roll call
+							else if (tmpTime.isAfter(instanceClassRoom.getFinishAt())) {
+								if (isTeacheRollCalled == false) {
+									rollCallString = rollCallString.concat(message2);
+								} else {
+									rollCallString = rollCallString.concat(message1);
+								}
+
+								for (; i < rollCallList.length; i++) {
+									rollCallString += rollCallList[i] + GeneralValue.regexForSplitListRollCall;
+								}
+								flag = true;
+								break;
+
+							} else {
 								rollCallString += rollCallList[i] + GeneralValue.regexForSplitListRollCall;
 							}
-							flag = true;
-							break;
-
-						} else {
-							rollCallString += rollCallList[i] + GeneralValue.regexForSplitListRollCall;
 						}
 					}
 

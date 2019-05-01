@@ -1,6 +1,7 @@
 package edu.hust.service;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 import edu.hust.model.ClassRoom;
@@ -29,11 +30,17 @@ public interface StudentClassService {
 
 	//boolean checkGenerateTimeValid(int weekday, LocalTime generateTime, int classID, int roomID);
 	
-	boolean rollCall(int classID, int studentID, LocalDateTime rollCallAt);
+	String rollCall(int classID, int studentID, LocalDateTime rollCallAt, String imei);
 
 	List<StudentClass> findByClassID(int id);
 	
 	boolean updateStudentClassInfo(StudentClass studentClass);
 
 	List<StudentClass> findCurrentStudentsByClassID(int id);
+
+	boolean checkStudentIsLearning(int studentID, int classID);
+	
+	boolean checkIsCheckedValid(String isChecked, LocalTime beginAt, LocalTime finishAt);
+
+	boolean checkStudentIsLearning(String studentEmail, int classID);
 }

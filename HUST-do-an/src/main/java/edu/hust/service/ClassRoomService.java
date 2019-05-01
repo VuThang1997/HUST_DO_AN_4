@@ -13,7 +13,7 @@ public interface ClassRoomService {
 	
 	ClassRoom getInfoClassRoom(int classID, int roomID, int weekday, LocalTime checkTime);
 
-	boolean updateClassRoomInfo(int roomID, int classID, ClassRoom classRoom);
+	//boolean updateClassRoomInfo(int roomID, int classID, ClassRoom classRoom);
 
 	List<ClassRoom> checkClassAvailable(int classID, int weekday, LocalTime beginAt, LocalTime finishAt);
 

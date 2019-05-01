@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 01, 2019 at 08:38 PM
+-- Generation Time: Apr 25, 2019 at 08:10 AM
 -- Server version: 10.1.37-MariaDB
 -- PHP Version: 7.3.1
 
@@ -36,16 +36,41 @@ CREATE TABLE `account` (
   `Password` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
   `Role` int(1) UNSIGNED NOT NULL,
   `UserInfo` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `Username` varchar(20) COLLATE utf8_unicode_ci NOT NULL
+  `Username` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `UpdateImeiCounter` int(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- Dumping data for table `account`
 --
 
-INSERT INTO `account` (`ID`, `Email`, `IMEI`, `IsActive`, `Password`, `Role`, `UserInfo`, `Username`) VALUES
-(1, 'emailStudent2@gmail.com', '123456', 1, '12345', 3, 'V H T+DH BKHN+1234567890+1979-01-01', 'testUpdate'),
-(2, 'teacher1@gmail.com', '123456', 2, '123', 2, 'V H T 3+DH BKHN+1234567890+1997-10-01', 'testTeacher');
+INSERT INTO `account` (`ID`, `Email`, `IMEI`, `IsActive`, `Password`, `Role`, `UserInfo`, `Username`, `UpdateImeiCounter`) VALUES
+(1, 'studentTest1@gmail.com', '12345678', 2, '12345', 3, 'V H T+DH BKHN+1234567890+1979-01-01', 'testTeacher', 1),
+(2, 'teacher1@gmail.com', '123456', 2, '123', 2, 'V H T 3+DH BKHN+1234567890+1997-10-01', 'testTeacher', 0),
+(4, 'emailStudent1@gmail.com', '123456789', 2, '1234', 3, NULL, 'student2', 0),
+(5, 'emailStudent3@gmail.com', '123456', 2, '12345', 3, NULL, 'student3', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `blacklist`
+--
+
+CREATE TABLE `blacklist` (
+  `ID` int(1) NOT NULL,
+  `ClassID` int(1) UNSIGNED NOT NULL,
+  `StudentID` int(1) UNSIGNED NOT NULL,
+  `FakeIMEI` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `CommitDate` date NOT NULL,
+  `CommitTime` time NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `blacklist`
+--
+
+INSERT INTO `blacklist` (`ID`, `ClassID`, `StudentID`, `FakeIMEI`, `CommitDate`, `CommitTime`) VALUES
+(2, 2, 1, '123456', '2019-04-25', '13:06:43');
 
 -- --------------------------------------------------------
 
@@ -70,7 +95,7 @@ CREATE TABLE `class` (
 --
 
 INSERT INTO `class` (`ID`, `CurrentLesson`, `IdentifyString`, `IsChecked`, `MaxStudent`, `ClassName`, `NumberOfLessons`, `CourseID`, `SemesterID`) VALUES
-(2, 4, '[B@17b0d28', '2019-122-5617', 14, 'class1', 31, 1, 1),
+(2, 17, NULL, '2019-115-46921', 14, 'class1', 31, 1, 1),
 (3, 0, NULL, NULL, 20, 'classTest2', 34, 1, 9);
 
 -- --------------------------------------------------------
@@ -94,8 +119,12 @@ CREATE TABLE `class_room` (
 
 INSERT INTO `class_room` (`ID`, `BeginAt`, `FinishAt`, `Weekday`, `ClassID`, `RoomID`) VALUES
 (1, '11:00:00', '23:00:00', 2, 2, 1),
-(2, '13:30:00', '16:00:00', 6, 2, 1),
-(3, '00:00:00', '02:00:00', 5, 2, 1);
+(2, '15:30:00', '17:00:00', 6, 2, 1),
+(3, '07:00:00', '09:00:00', 5, 2, 1),
+(4, '14:15:00', '15:00:00', 4, 2, 1),
+(5, '16:00:00', '18:00:00', 5, 2, 1),
+(6, '12:30:00', '14:00:00', 5, 2, 1),
+(7, '20:00:00', '22:00:00', 5, 2, 1);
 
 -- --------------------------------------------------------
 
@@ -184,7 +213,9 @@ CREATE TABLE `student_class` (
 --
 
 INSERT INTO `student_class` (`ID`, `IsChecked`, `IsLearning`, `listRollCall`, `StudentID`, `ClassID`) VALUES
-(1, NULL, 1, '2019-115-5431;', 1, 2);
+(1, '2019-115-47203', 1, '2019-115-28800;2019-115-46800p;2019-115-47203;', 1, 2),
+(2, NULL, 1, '2019-115-28800;2019-115-46973y;2019-115-i;2019-115-i;', 4, 2),
+(3, '2019-115-46894', 1, '2019-115-x;2019-115-46800;2019-115-61200;2019-115-i;', 5, 2);
 
 -- --------------------------------------------------------
 
@@ -205,7 +236,7 @@ CREATE TABLE `teacher_class` (
 --
 
 INSERT INTO `teacher_class` (`ID`, `IsTeaching`, `ListRollCall`, `TeacherID`, `ClassID`) VALUES
-(1, 1, '2019-115-4952;2019-122-5617;', 2, 2);
+(1, 1, '2019-115-28800;2019-115-46921;', 2, 2);
 
 --
 -- Indexes for dumped tables
@@ -217,6 +248,12 @@ INSERT INTO `teacher_class` (`ID`, `IsTeaching`, `ListRollCall`, `TeacherID`, `C
 ALTER TABLE `account`
   ADD PRIMARY KEY (`ID`),
   ADD UNIQUE KEY `UK_ltaacihrmn3qk7g85jspnyo6s` (`Email`);
+
+--
+-- Indexes for table `blacklist`
+--
+ALTER TABLE `blacklist`
+  ADD PRIMARY KEY (`ID`);
 
 --
 -- Indexes for table `class`
@@ -280,7 +317,13 @@ ALTER TABLE `teacher_class`
 -- AUTO_INCREMENT for table `account`
 --
 ALTER TABLE `account`
-  MODIFY `ID` int(1) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `ID` int(1) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `blacklist`
+--
+ALTER TABLE `blacklist`
+  MODIFY `ID` int(1) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `class`
@@ -292,7 +335,7 @@ ALTER TABLE `class`
 -- AUTO_INCREMENT for table `class_room`
 --
 ALTER TABLE `class_room`
-  MODIFY `ID` int(1) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `ID` int(1) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `course`
@@ -316,7 +359,7 @@ ALTER TABLE `semester`
 -- AUTO_INCREMENT for table `student_class`
 --
 ALTER TABLE `student_class`
-  MODIFY `ID` int(1) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `ID` int(1) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `teacher_class`

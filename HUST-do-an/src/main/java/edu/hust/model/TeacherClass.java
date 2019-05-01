@@ -1,5 +1,7 @@
 package edu.hust.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -14,7 +16,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "teacher_class")
-public class TeacherClass {
+public class TeacherClass implements Serializable {
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,6 +49,12 @@ public class TeacherClass {
 		super();
 		this.listRollCall = listRollCall;
 		this.isTeaching = isTeaching;
+	}
+
+	public TeacherClass(Class classInstance, Account account) {
+		super();
+		this.classInstance = classInstance;
+		this.account = account;
 	}
 
 	public TeacherClass(int isTeaching) {

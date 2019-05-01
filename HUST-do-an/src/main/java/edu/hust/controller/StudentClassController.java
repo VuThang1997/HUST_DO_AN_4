@@ -144,8 +144,12 @@ public class StudentClassController {
 
 			// add rollcall time to student.listRollcall
 			rollCallAt = LocalDateTime.now();
-			this.studentClassService.rollCall(classID, studentID, rollCallAt);
-
+			errorMessage = this.studentClassService.rollCall(classID, studentID, rollCallAt, imei);
+			if (errorMessage != null) {
+				report = new ReportError(200, errorMessage);
+				return ResponseEntity.ok(report);
+			}
+			
 			return ResponseEntity.ok("Roll call successful!");
 
 		} catch (Exception e) {

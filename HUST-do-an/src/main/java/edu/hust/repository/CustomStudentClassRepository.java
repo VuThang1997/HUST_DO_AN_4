@@ -20,4 +20,7 @@ public interface CustomStudentClassRepository {
 	
 	@Query("SELECT sc FROM StudentClass sc WHERE sc.classInstance.id = ?1 AND sc.isLearning = ?2")
 	List<StudentClass> getListCurrentStudentClass(int id, int value);
+	
+	@Query("SELECT sc FROM StudentClass sc WHERE sc.isLearning = ?3 AND sc.account.email = ?1 AND sc.classInstance.id = ?2")
+	Optional<StudentClass> findByStudentEmailAndClassIDAndStatus(String studentEmail, int classID, int value);
 }

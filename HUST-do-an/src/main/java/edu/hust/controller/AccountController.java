@@ -25,6 +25,7 @@ import edu.hust.model.Account;
 import edu.hust.model.ReportError;
 import edu.hust.model.User;
 import edu.hust.service.AccountService;
+import edu.hust.utils.GeneralValue;
 import edu.hust.utils.JsonMapUtil;
 import edu.hust.utils.ValidationData;
 
@@ -137,6 +138,7 @@ public class AccountController {
 			account.setIsActive(AccountStatus.INACTIVE.getValue());
 			account.setImei(null);
 			account.setUserInfo(null);
+			account.setUpdateImeiCounter(0);
 			this.accountService.saveAccount(account);
 
 			return new ResponseEntity<>("Registration success", HttpStatus.CREATED);
@@ -316,6 +318,7 @@ public class AccountController {
 					report = new ReportError(1, "Json dynamic map lacks necessary key(s)!");
 					return ResponseEntity.badRequest().body(report);
 				}
+				
 			} else {
 				if (!this.jsonMapUtil.checkKeysExist(jsonMap, "email", "password", "username", "imei", "birthday",
 						"phone", "address", "fullName")) {
@@ -330,11 +333,22 @@ public class AccountController {
 				report = new ReportError(17, "Updating account info failed because " + errorMessage);
 				return ResponseEntity.badRequest().body(report);
 			}
+			
+			newImei = jsonMap.get("imei").toString();
+			if (newImei != account.getImei()) {
+				if (account.getUpdateImeiCounter() == GeneralValue.maxTimesForUpdatingImei) {
+					report = new ReportError(18, "Adding account info failed because this account is not allowed to change imei number");
+					return ResponseEntity.badRequest().body(report);
+				}
+				
+				account.setImei(newImei);
+				account.setUpdateImeiCounter(account.getUpdateImeiCounter() + 1);
+			}
 
 			newEmail = jsonMap.get("email").toString();
 			newPassword = jsonMap.get("password").toString();
 			newUsername = jsonMap.get("username").toString();
-			newImei = jsonMap.get("imei").toString();
+			
 
 			if (updateUser == true) {
 				LocalDate birthday = null;
@@ -358,7 +372,6 @@ public class AccountController {
 			account.setEmail(newEmail);
 			account.setPassword(newPassword);
 			account.setUsername(newUsername);
-			account.setImei(newImei);
 
 			this.accountService.updateAccountInfo(account);
 			if (user != null) {

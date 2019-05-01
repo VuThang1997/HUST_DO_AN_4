@@ -37,6 +37,9 @@ public class Account implements Serializable {
 	@Column(name = "IMEI", nullable = true, length = 20)
 	private String imei;
 	
+	@Column(name = "UpdateImeiCounter", length = 1)
+	private int updateImeiCounter;
+	
 	@Column(name = "UserInfo", length = 200)
 	private String userInfo;
 
@@ -129,6 +132,14 @@ public class Account implements Serializable {
 
 	public void setUserInfo(String userInfo) {
 		this.userInfo = userInfo;
+	}
+
+	public int getUpdateImeiCounter() {
+		return updateImeiCounter;
+	}
+
+	public void setUpdateImeiCounter(int updateImeiCounter) {
+		this.updateImeiCounter = updateImeiCounter;
 	}
 
 	@Override

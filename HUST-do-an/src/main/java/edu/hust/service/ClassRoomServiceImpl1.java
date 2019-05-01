@@ -44,14 +44,6 @@ public class ClassRoomServiceImpl1 implements ClassRoomService {
 	}
 
 	@Override
-	public boolean updateClassRoomInfo(int roomID, int classID, ClassRoom classRoom) {
-		// Optional<ClassRoom> oldInfo =
-		// this.classRoomRepository.findByClassIDAndRoomID(classID, roomID);
-		return false;
-
-	}
-
-	@Override
 	public ClassRoom getInfoClassRoom(int classID, int roomID, int weekday, LocalTime checkTime) {
 		Optional<ClassRoom> classRoom = this.classRoomRepository.findByClassIDAndRoomIDAndWeekday(classID, roomID,
 				weekday, checkTime);

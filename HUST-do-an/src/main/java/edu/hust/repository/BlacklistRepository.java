@@ -3,9 +3,9 @@ package edu.hust.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import edu.hust.model.StudentClass;
+import edu.hust.model.Blacklist;
 
 @Repository
-public interface StudentClassRepository extends JpaRepository<StudentClass, Integer>, CustomStudentClassRepository{
+public interface BlacklistRepository extends JpaRepository<Blacklist, Integer> {
 
 }

@@ -49,4 +49,12 @@ public interface TeacherClassService {
 	TeacherClass findCurrentTeacherByClassID(int classID);
 	
 	boolean updateTeacherClass(TeacherClass teacherClass);
+
+	boolean rollCallStudentWithPermission(String studentEmail, int classID, int roomID, int reason);
+
+	boolean checkTimetableConflict(int teacherID, int classID);
+
+	void addNewTeacherClass(TeacherClass teacherClass);
+
+	String checkReasonValid(int reason);
 }
