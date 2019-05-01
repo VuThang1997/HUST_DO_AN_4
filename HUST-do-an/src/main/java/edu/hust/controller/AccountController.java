@@ -378,7 +378,9 @@ public class AccountController {
 				user.setId(account.getId());
 				this.accountService.addUserInfo(user);
 			}
-			return ResponseEntity.ok("Updating account info successes!");
+			
+			report = new ReportError(200, "Updating account info successes!");
+			return ResponseEntity.ok(report);
 
 		} catch (Exception e) {
 			e.printStackTrace();
